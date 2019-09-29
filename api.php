@@ -38,7 +38,7 @@ if($post->local == "nova_etapa") {
 
       if(count($row) > 0){
         $dataFinal = date("Y-m-d H:i:s");
-        $sql = "UPDATE Item_Etapa SET data_final = '{$dataFinal}', descricao = '{$descricao}', FK_Usuario_Codigo = '{$usuario}'
+        $sql = "UPDATE Item_Etapa SET data_final = '{$dataFinal}', FK_Usuario_Codigo = '{$usuario}'
                 WHERE FK_Etapa_Codigo ='{$etapa['codigo']}' AND FK_Venda_Codigo = '{$post->venda}';";
         $sucesso = mysqli_query($conn, $sql);
 

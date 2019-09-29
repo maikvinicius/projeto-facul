@@ -135,7 +135,11 @@ header .btn, .btn.btn-default{
                       $result = mysqli_query($conn, $consulta);
                       $rowInicial = mysqli_fetch_assoc($result);
 
-                      if(!$row || !$rowInicial){
+                      $consulta = "SELECT * FROM Etapa WHERE final ='1' AND status='1';";
+                      $result = mysqli_query($conn, $consulta);
+                      $rowFinal = mysqli_fetch_assoc($result);
+
+                      if(!$row || !$rowInicial || !$rowFinal){
 
                       ?>
 
@@ -144,10 +148,27 @@ header .btn, .btn.btn-default{
                           <i class="material-icons">close</i>
                         </button> -->
                         <span>
-                          <b> Aviso - </b> É necessário ir em etapas e definir uma etapa como etapa inicial e final!</span>
+                          <b> Aviso - </b> É necessário ir em etapas e definir uma etapa como etapa inicial, final e última!</span>
                       </div>
 
                       <?php } else { ?>
+                        <style>
+                        .box-inline{
+                          margin-top:10px;display: flex;align-items: center;padding-left:10px;
+                        }
+                        </style>
+                        <div style="display:flex;">
+                        <h3 style="margin-left:10px;">Legenda:</h3>
+                        <div class="box-inline">
+                          <div style="background:#FFF;width:32px;height:32px;border:1px solid #000;"></div><b style="margin-left:10px;"> Faltam mais de 5 dias</b>
+                        </div>
+                        <div class="box-inline">
+                          <div style="background:#ff9800;width:32px;height:32px;"></div><b style="margin-left:10px;"> Faltam menos ou igual a 5 dias</b>
+                        </div>
+                        <div class="box-inline">
+                          <div style="background:#f44336;width:32px;height:32px;"></div><b style="margin-left:10px;"> Faltam 0 dias (atrasado)</b>
+                        </div>
+                        </div>
                         <div id="myKanban"></div>
                       <?php } ?>
                       </div>
@@ -210,14 +231,14 @@ header .btn, .btn.btn-default{
   <script src="assets/js/moment.js"></script>
   <script src="https://cdn.ckeditor.com/4.12.1/standard/ckeditor.js"></script>
 
-
   <?php 
           $consulta = "SELECT V.codigo as CodigoVenda,
                               C.nome as cliente,
                               C.cnpj as cnpj,
                               V.valor as total,
                               V.data_inicial as inicio,
-                              V.data_final as fim
+                              V.data_final as fim,
+                              V.token as token
                        FROM Venda as V
                        INNER JOIN Cliente AS C ON (C.codigo = V.FK_Cliente_Codigo)
                        WHERE V.status = 1 ORDER BY V.codigo DESC;";
@@ -227,7 +248,7 @@ header .btn, .btn.btn-default{
           ?>
   <!-- Modal -->
   <div id="venda<?php echo $row['CodigoVenda']; ?>" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
 
       <!-- Modal content-->
       <div class="modal-content">
@@ -235,14 +256,75 @@ header .btn, .btn.btn-default{
           <p><h3><?php echo $row['cliente']; ?></h3></p>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
+        
         <div class="modal-body">
           <p><b>CNPJ: </b><?php echo $row['cnpj']; ?></p>
           <p><b>Data inicial: </b><?php echo date("d/m/Y", strtotime($row['inicio'])); ?></p>
           <p><b>Data final: </b><?php echo date("d/m/Y", strtotime($row['fim'])); ?></p>
         </div>
-        <div class="modal-footer">
-          <!-- <p><b>Total: </b> R$ <?php echo number_format($row['total'],2, ',', '.'); ?></p> -->
+        <div class="modal-footer" style="display:block;">
+                <p><b>Projeto: </b> <?php echo $row['CodigoVenda']; ?></p>
+                <table class="table">
+                <thead>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Total</th>
+                </thead>
+                <tbody>
+                <?php
+              $consulta = "SELECT P.*, IV.quantidade, IV.valor FROM Produto AS P
+              INNER JOIN Item_Venda as IV ON (IV.FK_Produto_Codigo = P.codigo)
+              INNER JOIN Venda AS V on (V.codigo = IV.FK_Venda_Codigo)
+              WHERE V.codigo = '{$row['CodigoVenda']}';";
+              $resultProdutos = mysqli_query($conn, $consulta);
+              if (mysqli_num_rows($resultProdutos) > 0) {
+              while($rowProdutos = mysqli_fetch_assoc($resultProdutos)) { ?>
+              <tr>
+              <td><?php echo $rowProdutos['nome']; ?></td>
+              <td><?php echo $rowProdutos['quantidade']; ?></td>
+              <td>R$ <?php echo number_format(($rowProdutos['valor']*$rowProdutos['quantidade']),2, ',', '.'); ?></td>
+              </tr>
+              <?php } } ?>
+              <tr><td></td><td></td><td>R$ <?php echo number_format($row['total'],2, ',', '.'); ?></td></tr>
+                </tbody>
+                </table>
         </div>
+        <div class="modal-footer" style="display:block;">
+          <p><b>Realizações: </b> </p>
+
+          <table class="table">
+          <thead>
+                <th>Etapa</th>
+                <th>Data</th>
+                <th>Usuário</th>
+                </thead>
+                <tbody>
+          <?php
+              $consulta = "SELECT E.nome AS etapa, IE.data_inicial, U.nome AS usuario 
+              FROM Venda AS V
+              INNER JOIN Item_Etapa as IE ON (IE.FK_Venda_codigo = V.codigo)
+              INNER JOIN Etapa AS E ON (E.codigo = IE.FK_Etapa_Codigo)
+              INNER JOIN Usuario AS U ON (U.codigo = IE.FK_Usuario_Codigo)
+              WHERE V.codigo= '{$row['CodigoVenda']}';";
+              $resultProdutos = mysqli_query($conn, $consulta);
+              if (mysqli_num_rows($resultProdutos) > 0) {
+              while($rowProdutos = mysqli_fetch_assoc($resultProdutos)) { ?>
+              <tr>
+              <td><?php echo $rowProdutos['etapa']; ?></td>
+              <td><?php echo date("d/m/Y H:i", strtotime($rowProdutos['data_inicial'])); ?></td>
+              <td><?php echo $rowProdutos['usuario']; ?></td>
+              </tr>
+              <?php } } else { ?>
+              <tr><td colspan="4" style="text-align:center;">Nenhuma etapa realizada.</td></tr>
+                <?php } ?>
+              </tbody>
+                </table>
+        </div>
+        <?php if($row['token']){ ?>
+        <div class="modal-footer" style="display:block;">
+        <p><b>Token: </b><?php echo $row['token'];?></p>
+        </div>
+        <?php } ?> 
       </div>
 
     </div>
@@ -302,11 +384,13 @@ header .btn, .btn.btn-default{
         <div class="form-group">
             <textarea name="observacoes" id="observacoes" cols="30" rows="10" class="form-control" placeholder="Digite sua observação aqui!!!!"></textarea>
             <script>
-                        CKEDITOR.replace( 'observacoes' );
-                </script>
+                CKEDITOR.config.allowedContent = true;
+                CKEDITOR.plugins.addExternal( 'iframe', 'assets/iframe/', 'plugin.js' );
+                CKEDITOR.replace( 'observacoes');
+            </script>
           </div>
-          <div id="token"  data-toggle="tooltip" data-placement="top" title="Envie esse token para o cliente para acessar: facilita.com.br/rastreio.php">Token: <?php echo md5(date("d/m/Y")); ?></div>
-          <input type="hidden" id="tokenValue" value="<?php echo md5(date("d/m/Y")); ?>">
+          <div id="token"  data-toggle="tooltip" data-placement="top" title="Envie esse token para o cliente para acessar: facilita.com.br/rastreio.php">Token: <?php echo md5(date("d/m/Y H:i:s")); ?></div>
+          <input type="hidden" id="tokenValue" value="<?php echo md5(date("d/m/Y H:i:s")); ?>">
         </div>
         <div class="modal-footer">
           <button id="buttonFinalizarConcluirPassar" class="btn btn-success">Concluir</button>
@@ -316,15 +400,22 @@ header .btn, .btn.btn-default{
     </div>
   </div>
   <script>
-
   $('[data-toggle="tooltip"]').tooltip();
-
+  
   function classDate(dataFinal){
     if(moment(dataFinal).isBefore(moment())){
       return "danger"
-    } else if(moment(dataFinal).diff(moment(), 'days') == 0){
+    } else if(moment(dataFinal).isBetween(moment(), moment().add(5, 'days'))){
       return "orange"
     }
+
+    console.log(moment(dataFinal).isBetween(moment(), moment().add(5, 'days')));
+    
+    console.log("Final: ", moment(dataFinal));
+    console.log("Dias: ", moment().add(5, 'days'));
+    console.log("---");
+    
+    // ajustar data laranja
   }
 
   <?php 

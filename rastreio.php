@@ -1,27 +1,7 @@
 <?php
 	include 'conexao.php';
 
-	// if(isset($_GET['produto']) && isset($_GET['quantidade'])){
-	// 	$id = (int) $_GET['produto'];
-	// 	if($id>0){
-	// 		$quantidade = (int) $_GET['quantidade'] + (int) $_GET['total'];
-	// 		$sql = "UPDATE servico SET quantidade='{$quantidade}' WHERE codigo=$id";
-	// 		$sucesso = mysqli_query($conn, $sql);
-
-	// 		if($sucesso){
-	// 			$codigoLogado = $_SESSION["codigo"];
-	// 			$quantidade = $_GET["quantidade"];
-	// 			$sql = "INSERT INTO acao (usuario, acao, produto)
-	// 							VALUES ('{$codigoLogado}', 'Atualizou produto, quantidade: {$quantidade}', '{$id}')";
-	// 			$sucesso = mysqli_query($conn, $sql);
-	// 		}
-
-	// 	}else{
-	// 		$sucesso = false;
-	// 	}
-	// }
-
-	$consulta = "SELECT * FROM Venda ORDER BY codigo DESC;";
+  $consulta = "SELECT * FROM Venda ORDER BY codigo DESC;";
   $result = mysqli_query($conn, $consulta);
 
 ?>
@@ -37,11 +17,9 @@
     FACILITA
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
-  <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-  <!-- CSS Files -->
-  <link href="assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+  <link href="assets/rastreio/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="assets/rastreio/bootstrap.min.js"></script>
+    <script src="assets/rastreio/jquery-1.11.1.min.js"></script>
 </head>
 <style>
 
@@ -341,17 +319,26 @@ img
 <body class="">
 
 <header>
-  <div class="navbar navbar-dark bg-dark shadow-sm" style="background: linear-gradient(60deg, #00bcd4, #088898);">
+  <div class="navbar navbar-dark bg-dark shadow-sm" style="background: linear-gradient(60deg, #00bcd4, #088898);box-shadow:0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 188, 212, 0.4);">
     <div class="container d-flex justify-content-between">
       <div class="navbar-brand d-flex align-items-center">
+      <style>
+      a:hover {
+          text-decoration: none;
+      }
+      </style>
+      <a href="rastreio.php">
         <div style="text-transform: uppercase;
+    padding: 5px 0px;
+    display: inline-block;
     font-size: 18px;
+    color: #FFF;
     white-space: nowrap;
     font-weight: 400;
     line-height: 30px;
     overflow: hidden;
     text-align: center;
-    display: block;">FACILITA</div>
+    display: block;">FACILITA - Rastreio</div></a>
       </div>
     </div>
   </div>
@@ -367,7 +354,7 @@ img
 
 <div class="alert alert-danger" style="margin-bottom:50px;">
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <i class="material-icons">close</i>
+    <i class="material-icons">X</i>
   </button>
   <span>
     <b> Aviso - </b> Token inválido!</span>
@@ -386,13 +373,7 @@ img
   </div>
 
   <?php } else { 
-    
-    $servername = "localhost";
-    $username = "root";
-    $password = "root";
-    $dbname = "crm";
 
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
     $token = addslashes($_GET['token']);
 
     $consulta = "SELECT * FROM Venda WHERE token = '{$token}'";
@@ -403,9 +384,14 @@ img
       echo "<script> document.location.href='rastreio.php?error';</script>";
     }
 
-    $consulta = "SELECT * FROM Item_Etapa WHERE FK_Venda_Codigo = '{$row['codigo']}' 
-                                                                            AND FK_Etapa_Codigo in (SELECT codigo FROM Etapa WHERE ordem >= (SELECT ordem FROM Etapa WHERE inicial = '1' LIMIT 1)) 
-                                                                            ORDER BY codigo ASC;";
+    $consulta = "
+    SELECT * FROM Item_Etapa WHERE FK_Venda_Codigo = '{$row['codigo']}' 
+    AND FK_Etapa_Codigo in (
+        SELECT codigo FROM Etapa 
+        WHERE ordem >= (SELECT ordem FROM Etapa WHERE inicial = '1' LIMIT 1) AND 
+        ordem <= (SELECT ordem FROM Etapa WHERE final = '1' LIMIT 1)
+    ) 
+   ORDER BY codigo ASC;";
     $result = mysqli_query($conn, $consulta);
     ?>
 
@@ -420,25 +406,25 @@ img
                               $resultEtapa = mysqli_query($conn, $consulta);
                               $etapa = mysqli_fetch_assoc($resultEtapa);
                       ?>
-    
-	<article class="timeline-entry <?php echo ($i%2 == 0) ? 'left-aligned' : '';?>">
+
+<article class="timeline-entry <?php echo ($i%2 == 0) ? 'left-aligned' : '';?>">
 		
 		<div class="timeline-entry-inner">
-			<time class="timeline-time"><span><?php echo date("d/m/Y", strtotime($item['data_inicial']));?></span> <span><?php echo date("H:i", strtotime($item['data_inicial']));?></span></time>
+        <time class="timeline-time"><span><?php echo date("d/m/Y", strtotime($item['data_inicial']));?></span> <span><?php echo date("H:i", strtotime($item['data_inicial']));?></span></time>
 			
-			<div class="timeline-icon bg-info">
-				<i class="entypo-feather"></i>
+			<div class="timeline-icon bg-info" style="background-color:#01b9d1;">
+				<i class="<?php echo ($i%2 == 0) ? 'entypo-suitcase' : 'entypo-feather';?>"></i>
 			</div>
 			
 			<div class="timeline-label">
-				<h2><?php echo $etapa['nome'];?></h2>
-				<p><?php echo $item['descricao'];?></p>
+                <h2><?php echo $etapa['nome'];?></h2>
+				<?php echo $item['descricao'];?>
 			</div>
 		</div>
 		
-  </article>
+	</article>
   
-  <?php } } ?>
+  <?php $i++; } } ?>
 	
   <article class="timeline-entry begin">
 	

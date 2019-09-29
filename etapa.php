@@ -22,9 +22,14 @@
       if(isset($_POST['inicial'])){
         $inicial = $_POST['inicial'];
       }
+
+      $final = null;
+      if(isset($_POST['final'])){
+        $final = $_POST['final'];
+      }
       
 			$sql = "UPDATE Etapa SET ordem='{$ordem}',nome='{$nome}',
-                                 status='{$status}', ultima='{$ultima}', inicial='{$inicial}'
+                                 status='{$status}', ultima='{$ultima}', inicial='{$inicial}', final='{$final}'
                                  WHERE codigo=$id";
       $sucesso = mysqli_query($conn, $sql);
 
@@ -56,8 +61,13 @@
       $inicial = $_POST['inicial'];
     }
 
-		$sql = "INSERT INTO Etapa (ordem, nome, status, ultima, inicial)
-						VALUES ('{$ordem}', '{$nome}', '{$status}', '{$ultima}', '{$inicial}')";
+    $final = null;
+    if(isset($_POST['final'])){
+      $final = $_POST['final'];
+    }
+
+		$sql = "INSERT INTO Etapa (ordem, nome, status, ultima, inicial, final)
+						VALUES ('{$ordem}', '{$nome}', '{$status}', '{$ultima}', '{$inicial}', '{$final}')";
     $sucesso = mysqli_query($conn, $sql);
     
     header('Location: etapas.php');
@@ -176,32 +186,11 @@
                           <div class="checkbox">
                               <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? checked : "" ?>> Ativar</label>
                             </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <?php } else { ?>
-                      <input type="hidden" name="status" value="<?php echo $row['status']; ?>">
-                    <?php } ?>
-
-                    <?php
-
-                    $consultaFinal = "SELECT * FROM Etapa WHERE inicial ='1' AND status='1'";
-                    $resultFinal = mysqli_query($conn, $consultaFinal);
-                    $rowFinal = mysqli_fetch_assoc($resultFinal);
-
-                    if(!$rowFinal){
-
-                    ?>
-
-                    <div class="row">
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>Status</label>
-                          <div class="form-group">
-                          <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como inícial, ele ficará disponível para seus clientes acessar o rastreio.">
+                            <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como inícial, ele ficará disponível para seus clientes acessar o rastreio.">
                               <label><input type="checkbox" name="inicial" value="1" <?php echo ($id>0 && $row['inicial'] == '1') ? checked : "" ?>> Inícial</label>
+                            </div>
+                            <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como final, ele ficará disponível para seus clientes até esta etapa no rastreio.">
+                              <label><input type="checkbox" name="final" value="1" <?php echo ($id>0 && $row['final'] == '1') ? checked : "" ?>> Final</label>
                             </div>
                           </div>
                         </div>
@@ -209,7 +198,7 @@
                     </div>
 
                     <?php } else { ?>
-                      <input type="hidden" name="inicial" value="<?php echo ($id>0 && $row['inicial'] == '1') ? $row['inicial'] : '0'; ?>">
+                      <input type="hidden" name="status" value="<?php echo $row['status']; ?>">
                     <?php } ?>
                     
                     <?php if ($id>0) { ?>

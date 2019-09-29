@@ -114,6 +114,7 @@
                         <th>Nome</th>
                         <th>Status</th>
                         <th>Inicial Cliente</th>
+                        <th>Final Cliente</th>
                         <th>Final</th>
                         <th>Ação</th>
                       </thead>
@@ -127,6 +128,7 @@
                           <td><?php echo $row['nome']; ?></td>
                           <td><?php echo ($row['status'])? "Ativo" : "Desativado"; ?></td>
                           <td><?php echo ($row['inicial'])? "Sim" : "-"; ?></td>
+                          <td><?php echo ($row['final'])? "Sim" : "-"; ?></td>
                           <td><?php echo ($row['ultima'])? "Sim" : "-"; ?></td>
                           <td class="text-primary">
                             <a href="etapa.php?id=<?php echo $row['codigo']; ?>">
