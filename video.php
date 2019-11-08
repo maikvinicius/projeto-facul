@@ -1,31 +1,8 @@
 <?php
 	include 'conexao.php';
 
-	$id = 0;
-	if(isset($_GET['id'])){
-
-    $id = (int) $_GET['id'];
-
-    if(isset($_POST['TotalNovas'])){
-      $quantidade = (int) $_POST['TotalNovas'];
-
-      if($quantidade > 0){
-        for ($i=1; $i <= $quantidade; $i++) { 
-          $categoria = $_POST['categoria'.$i];
-          $sql = "INSERT INTO Item_Cat_Cliente (FK_Categoria_Cliente_codigo, FK_Cliente_codigo, empresa)
-              VALUES ('{$categoria}', '{$id}', '{$_SESSION["empresa"]}')";
-          $sucesso = mysqli_query($conn, $sql);
-        }
-      }
-
-      header('Location: categorias_clientes_view.php?id='.$id);
-    }
-
-    $consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
-		$result = mysqli_query($conn, $consulta);
-		$row = mysqli_fetch_assoc($result);
-
-	}
+	$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
+  $result = mysqli_query($conn, $consulta);
 
 ?>
 <!DOCTYPE html>
@@ -37,7 +14,7 @@
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    Facilita - CRM
+    FACILITA
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -47,19 +24,17 @@
   <link href="assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="assets/demo/demo.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/js/chart/Chart.min.css">
+  <script src="assets/js/chart/Chart.bundle.min.js"></script>
+  <script src="assets/js/chart/Chart.min.js"></script>
 </head>
 
 <body class="">
   <div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white" data-image="assets/img/sidebar-1.jpg">
-      <!--
-        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
-
-        Tip 2: you can also add an image using data-image tag
-    -->
       <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
-          Facilita
+        <a href="#" class="simple-text logo-normal">
+          FACILITA
         </a>
       </div>
       <div class="sidebar-wrapper">
@@ -71,7 +46,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Clientes</a>
+            <a class="navbar-brand" href="#pablo">Manual do usuário</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -81,6 +56,7 @@
           </button>
           <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
+            <li class="nav-item">
               <?php include 'notificacoes.php'; ?>
               <?php include 'mini_painel.php'; ?>
             </ul>
@@ -93,74 +69,25 @@
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header card-header-primary">
-                  <h4 class="card-title">Cadastrar categoria para seu cliente</h4>
-                  <p class="card-category">Adicione as categorias!</p>
+                <div class="card-header card-header-primary" style="display:flex;justify-content: space-between;">
+                  <div>
+                    <h4 class="card-title ">Manual do usuário</h4>
+                      <p class="card-category"> Cronograma</p>
+                  </div>
                 </div>
                 <div class="card-body">
-                  <form action="#" method="post">
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Nome</label>
-                          <input disabled type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control">
-                        </div>
-                      </div>
-                    </div>
 
-                    <div id="novasRespostas"></div>
-                    <input type="hidden" name="TotalNovas" id="TotalNovas" value="0">
-                    <div class="row">
-                      <div class="col-md-12">
-                        <button type="button" class="btn btn-primary" onclick="novaResposta()">Adicionar categoria</button>
-                      </div>
-                    </div>
+                <iframe width="100%" height="500" src="https://www.youtube.com/embed/vO5j4LxbtxM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-                    <button type="submit" class="btn btn-primary pull-right">Cadastrar</button>
-                    
-                    <div class="clearfix"></div>
-                  </form>
                 </div>
               </div>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
   </div>
-
-  
-  </select>
-  <script>
-  function novaResposta(){
-
-    var total = parseInt($("#TotalNovas").val());
-    total = total + 1;
-    var html = '';
-
-    html += '<div class="row">';
-    html += '<div class="col-md-12">';
-    html += '<div class="form-group">';
-    html += '<select name="categoria'+total+'" class="form-control">';
-
-    <?php
-    $consulta = "SELECT * FROM Categoria_Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND status='1';";
-    $result = mysqli_query($conn, $consulta);
-    if (mysqli_num_rows($result) > 0) {
-      while($row = mysqli_fetch_assoc($result)) { ?>
-    html += '<option value="<?php echo $row['codigo']; ?>"><?php echo $row['nome']; ?></option>';
-      <?php }} ?>
-    html += '</select>';
-    html += '</div>';
-    html += '</div>';
-    html += '</div>';
-    html += '<div style="clear:both;"></div>';
-
-    $("#novasRespostas").append(html);
-    $("#TotalNovas").val(total);
-
-  }
-  </script>
   <!--   Core JS Files   -->
   <script src="assets/js/core/jquery.min.js"></script>
   <script src="assets/js/core/popper.min.js"></script>

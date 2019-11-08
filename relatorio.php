@@ -1,27 +1,7 @@
 <?php
 	include 'conexao.php';
 
-	// if(isset($_GET['produto']) && isset($_GET['quantidade'])){
-	// 	$id = (int) $_GET['produto'];
-	// 	if($id>0){
-	// 		$quantidade = (int) $_GET['quantidade'] + (int) $_GET['total'];
-	// 		$sql = "UPDATE servico SET quantidade='{$quantidade}' WHERE codigo=$id";
-	// 		$sucesso = mysqli_query($conn, $sql);
-
-	// 		if($sucesso){
-	// 			$codigoLogado = $_SESSION["codigo"];
-	// 			$quantidade = $_GET["quantidade"];
-	// 			$sql = "INSERT INTO acao (usuario, acao, produto)
-	// 							VALUES ('{$codigoLogado}', 'Atualizou produto, quantidade: {$quantidade}', '{$id}')";
-	// 			$sucesso = mysqli_query($conn, $sql);
-	// 		}
-
-	// 	}else{
-	// 		$sucesso = false;
-	// 	}
-	// }
-
-	$consulta = "SELECT * FROM Venda ORDER BY codigo DESC;";
+	$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
   $result = mysqli_query($conn, $consulta);
 
 ?>
@@ -182,20 +162,6 @@
               </div>
             </div>
           </div>
-          
-            <!-- <nav aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1">Voltar</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#">Próximo</a>
-                </li>
-              </ul>
-            </nav> -->
           
         </div>
       </div>

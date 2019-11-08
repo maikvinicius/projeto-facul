@@ -24,14 +24,14 @@
                                  login='{$login}', 
                                  senha='{$senha}',
                                  status='{$status}'  
-                                 WHERE codigo=$id";
+                                 WHERE empresa = '{$_SESSION["empresa"]}' AND codigo=$id";
       $sucesso = mysqli_query($conn, $sql);
 
       header('Location: usuarios.php');
 
 		}
 
-		$consulta = "SELECT * FROM Usuario WHERE codigo ='{$id}'";
+		$consulta = "SELECT * FROM Usuario WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
@@ -48,8 +48,8 @@
       $status = "1";
     }
 
-		$sql = "INSERT INTO Usuario (nome, telefone, email, login, senha, status)
-						VALUES ('{$nome}', '{$telefone}', '{$email}', '{$login}', '{$senha}', '{$status}')";
+		$sql = "INSERT INTO Usuario (nome, telefone, email, login, senha, status, empresa)
+						VALUES ('{$nome}', '{$telefone}', '{$email}', '{$login}', '{$senha}', '{$status}', '{$_SESSION["empresa"]}')";
     $sucesso = mysqli_query($conn, $sql);
     
     header('Location: usuarios.php');

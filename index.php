@@ -23,6 +23,7 @@ if(isset($_POST['login']) && isset($_POST['senha'])) {
     if($row){
         $_SESSION["logado"] = true;
         $_SESSION["codigo"] = $row['codigo'];
+        $_SESSION["empresa"] = $row['empresa'];
         header('Location: dashboard.php');
     }else{
         $error = true;

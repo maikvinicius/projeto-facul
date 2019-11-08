@@ -1,27 +1,7 @@
 <?php
 	include 'conexao.php';
 
-	// if(isset($_GET['produto']) && isset($_GET['quantidade'])){
-	// 	$id = (int) $_GET['produto'];
-	// 	if($id>0){
-	// 		$quantidade = (int) $_GET['quantidade'] + (int) $_GET['total'];
-	// 		$sql = "UPDATE servico SET quantidade='{$quantidade}' WHERE codigo=$id";
-	// 		$sucesso = mysqli_query($conn, $sql);
-
-	// 		if($sucesso){
-	// 			$codigoLogado = $_SESSION["codigo"];
-	// 			$quantidade = $_GET["quantidade"];
-	// 			$sql = "INSERT INTO acao (usuario, acao, produto)
-	// 							VALUES ('{$codigoLogado}', 'Atualizou produto, quantidade: {$quantidade}', '{$id}')";
-	// 			$sucesso = mysqli_query($conn, $sql);
-	// 		}
-
-	// 	}else{
-	// 		$sucesso = false;
-	// 	}
-	// }
-
-	$consulta = "SELECT * FROM Usuario;";
+	$consulta = "SELECT * FROM Usuario WHERE empresa = '{$_SESSION["empresa"]}';";
   $result = mysqli_query($conn, $consulta);
 
 ?>
@@ -127,15 +107,15 @@ header .btn, .btn.btn-default{
 
                       <?php
 
-                      $consulta = "SELECT * FROM Etapa WHERE ultima ='1' AND status='1';";
+                      $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND ultima ='1' AND status='1';";
                       $result = mysqli_query($conn, $consulta);
                       $row = mysqli_fetch_assoc($result);
 
-                      $consulta = "SELECT * FROM Etapa WHERE inicial ='1' AND status='1';";
+                      $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND inicial ='1' AND status='1';";
                       $result = mysqli_query($conn, $consulta);
                       $rowInicial = mysqli_fetch_assoc($result);
 
-                      $consulta = "SELECT * FROM Etapa WHERE final ='1' AND status='1';";
+                      $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND final ='1' AND status='1';";
                       $result = mysqli_query($conn, $consulta);
                       $rowFinal = mysqli_fetch_assoc($result);
 
@@ -241,7 +221,7 @@ header .btn, .btn.btn-default{
                               V.token as token
                        FROM Venda as V
                        INNER JOIN Cliente AS C ON (C.codigo = V.FK_Cliente_Codigo)
-                       WHERE V.status = 1 ORDER BY V.codigo DESC;";
+                       WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.status = 1 ORDER BY V.codigo DESC;";
           $result = mysqli_query($conn, $consulta);
           if (mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_assoc($result)) {
@@ -275,7 +255,7 @@ header .btn, .btn.btn-default{
               $consulta = "SELECT P.*, IV.quantidade, IV.valor FROM Produto AS P
               INNER JOIN Item_Venda as IV ON (IV.FK_Produto_Codigo = P.codigo)
               INNER JOIN Venda AS V on (V.codigo = IV.FK_Venda_Codigo)
-              WHERE V.codigo = '{$row['CodigoVenda']}';";
+              WHERE P.empresa = '{$_SESSION["empresa"]}' AND V.codigo = '{$row['CodigoVenda']}';";
               $resultProdutos = mysqli_query($conn, $consulta);
               if (mysqli_num_rows($resultProdutos) > 0) {
               while($rowProdutos = mysqli_fetch_assoc($resultProdutos)) { ?>
@@ -305,7 +285,7 @@ header .btn, .btn.btn-default{
               INNER JOIN Item_Etapa as IE ON (IE.FK_Venda_codigo = V.codigo)
               INNER JOIN Etapa AS E ON (E.codigo = IE.FK_Etapa_Codigo)
               INNER JOIN Usuario AS U ON (U.codigo = IE.FK_Usuario_Codigo)
-              WHERE V.codigo= '{$row['CodigoVenda']}';";
+              WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.codigo= '{$row['CodigoVenda']}';";
               $resultProdutos = mysqli_query($conn, $consulta);
               if (mysqli_num_rows($resultProdutos) > 0) {
               while($rowProdutos = mysqli_fetch_assoc($resultProdutos)) { ?>
@@ -420,7 +400,7 @@ header .btn, .btn.btn-default{
 
   <?php 
       $array = array();
-      $consulta = "SELECT * FROM Etapa WHERE status = 1 ORDER BY ordem ASC;";
+      $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND status = 1 ORDER BY ordem ASC;";
       $result = mysqli_query($conn, $consulta);
       if (mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)) {
@@ -432,13 +412,13 @@ header .btn, .btn.btn-default{
   var array_produtos = string_array.split("|");
 
 <?php
-  $consultaFinal = "SELECT * FROM Etapa WHERE status = 1 AND ultima = 1;";
+  $consultaFinal = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND status = 1 AND ultima = 1;";
   $resultFinal = mysqli_query($conn, $consultaFinal);
   $rowFinal = mysqli_fetch_assoc($resultFinal);
 ?>
 
 <?php
-  $consultaFinal = "SELECT * FROM Etapa WHERE status = 1 AND inicial = 1;";
+  $consultaFinal = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND status = 1 AND inicial = 1;";
   $resultFinal = mysqli_query($conn, $consultaFinal);
   $rowInicial = mysqli_fetch_assoc($resultFinal);
 ?>
@@ -521,7 +501,8 @@ var KanbanTest = new jKanban({
             item: [
               <?php 
           $consulta = "SELECT * FROM Venda AS V
-                        WHERE NOT EXISTS(SELECT * FROM Item_Etapa WHERE FK_Venda_Codigo = V.codigo) 
+                        WHERE V.empresa = '{$_SESSION["empresa"]}' 
+                        AND NOT EXISTS(SELECT * FROM Item_Etapa WHERE FK_Venda_Codigo = V.codigo) 
                         AND V.status = 1
                         ORDER BY V.codigo DESC;";
           $result = mysqli_query($conn, $consulta);
@@ -534,7 +515,7 @@ var KanbanTest = new jKanban({
               ]
           },
           <?php 
-          $consulta = "SELECT * FROM Etapa WHERE status = 1 AND ultima = 0 ORDER BY ordem ASC;";
+          $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND status = 1 AND ultima = 0 ORDER BY ordem ASC;";
           $result = mysqli_query($conn, $consulta);
           if (mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_assoc($result)) {
@@ -552,7 +533,7 @@ var KanbanTest = new jKanban({
                               V.data_final as final
                        FROM Venda AS V
                        INNER JOIN Item_Etapa AS IE ON (V.codigo = IE.FK_Venda_Codigo)
-                       WHERE V.status = 1 AND IE.FK_Etapa_Codigo = '{$row['codigo']}' 
+                       WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.status = 1 AND IE.FK_Etapa_Codigo = '{$row['codigo']}' 
                        AND IE.data_final IS NULL ORDER BY V.codigo DESC;";
           $resultCards = mysqli_query($conn, $consulta);
           if (mysqli_num_rows($resultCards) > 0) {
@@ -570,7 +551,7 @@ var KanbanTest = new jKanban({
           <?php $i++; } } ?>
 
           <?php 
-          $consultaFinal = "SELECT * FROM Etapa WHERE status = 1 AND ultima = 1;";
+          $consultaFinal = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND status = 1 AND ultima = 1;";
           $resultFinal = mysqli_query($conn, $consultaFinal);
           $rowFinal = mysqli_fetch_assoc($resultFinal);
           ?>
@@ -587,7 +568,7 @@ var KanbanTest = new jKanban({
                               V.data_final as final
                        FROM Venda AS V
                        INNER JOIN Item_Etapa AS IE ON (V.codigo = IE.FK_Venda_Codigo)
-                       WHERE V.status = 1 AND IE.FK_Etapa_Codigo = '{$rowFinal['codigo']}' 
+                       WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.status = 1 AND IE.FK_Etapa_Codigo = '{$rowFinal['codigo']}' 
                        AND IE.data_final IS NULL ORDER BY V.codigo DESC;";
           $resultCards = mysqli_query($conn, $consulta);
           if (mysqli_num_rows($resultCards) > 0) {

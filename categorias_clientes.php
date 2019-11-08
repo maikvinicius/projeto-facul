@@ -1,27 +1,7 @@
 <?php
 	include 'conexao.php';
 
-	// if(isset($_GET['produto']) && isset($_GET['quantidade'])){
-	// 	$id = (int) $_GET['produto'];
-	// 	if($id>0){
-	// 		$quantidade = (int) $_GET['quantidade'] + (int) $_GET['total'];
-	// 		$sql = "UPDATE servico SET quantidade='{$quantidade}' WHERE codigo=$id";
-	// 		$sucesso = mysqli_query($conn, $sql);
-
-	// 		if($sucesso){
-	// 			$codigoLogado = $_SESSION["codigo"];
-	// 			$quantidade = $_GET["quantidade"];
-	// 			$sql = "INSERT INTO acao (usuario, acao, produto)
-	// 							VALUES ('{$codigoLogado}', 'Atualizou produto, quantidade: {$quantidade}', '{$id}')";
-	// 			$sucesso = mysqli_query($conn, $sql);
-	// 		}
-
-	// 	}else{
-	// 		$sucesso = false;
-	// 	}
-	// }
-
-	$consulta = "SELECT * FROM Categoria_Cliente;";
+	$consulta = "SELECT * FROM Categoria_Cliente WHERE empresa = '{$_SESSION["empresa"]}';";
   $result = mysqli_query($conn, $consulta);
 
 ?>

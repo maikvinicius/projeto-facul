@@ -30,14 +30,14 @@
       
 			$sql = "UPDATE Etapa SET ordem='{$ordem}',nome='{$nome}',
                                  status='{$status}', ultima='{$ultima}', inicial='{$inicial}', final='{$final}'
-                                 WHERE codigo=$id";
+                                 WHERE empresa = '{$_SESSION["empresa"]}' AND codigo=$id";
       $sucesso = mysqli_query($conn, $sql);
 
       header('Location: etapas.php');
 
 		}
 
-		$consulta = "SELECT * FROM Etapa WHERE codigo ='{$id}'";
+		$consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
@@ -66,8 +66,8 @@
       $final = $_POST['final'];
     }
 
-		$sql = "INSERT INTO Etapa (ordem, nome, status, ultima, inicial, final)
-						VALUES ('{$ordem}', '{$nome}', '{$status}', '{$ultima}', '{$inicial}', '{$final}')";
+		$sql = "INSERT INTO Etapa (ordem, nome, status, ultima, inicial, final, empresa)
+						VALUES ('{$ordem}', '{$nome}', '{$status}', '{$ultima}', '{$inicial}', '{$final}', '{$_SESSION["empresa"]}')";
     $sucesso = mysqli_query($conn, $sql);
     
     header('Location: etapas.php');
@@ -151,7 +151,7 @@
 
                   <?php
                     if($id == 0){
-                      $consulta = "SELECT * FROM Etapa ORDER BY codigo DESC LIMIT 1";
+                      $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC LIMIT 1";
                       $resultOrdem = mysqli_query($conn, $consulta);
                       $rowOrdem = mysqli_fetch_assoc($resultOrdem);
                       $ordem = ((int)$rowOrdem["ordem"]) + 1;
@@ -176,7 +176,7 @@
                       </div>
                     </div>
 
-                    <?php if($id>0 && $row['ultima'] != 1) { ?>
+                    <?php if($id>0) { ?>
 
                     <div class="row">
                       <div class="col-md-3">
@@ -192,6 +192,11 @@
                             <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como final, ele ficará disponível para seus clientes até esta etapa no rastreio.">
                               <label><input type="checkbox" name="final" value="1" <?php echo ($id>0 && $row['final'] == '1') ? checked : "" ?>> Final</label>
                             </div>
+                            <?php if($row['ultima'] != '1') { ?>
+                            <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como última, ele ficará para concluir o cronograma.">
+                              <label><input type="checkbox" name="ultima" value="1" <?php echo ($id>0 && $row['ultima'] == '1') ? checked : "" ?>> Última</label>
+                            </div>
+                            <?php } ?>
                           </div>
                         </div>
                       </div>

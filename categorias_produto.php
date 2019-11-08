@@ -16,14 +16,14 @@
       
 			$sql = "UPDATE Categoria_Produto SET nome='{$nome}', 
                                  status='{$status}'  
-                                 WHERE codigo=$id";
+                                 WHERE empresa = '{$_SESSION["empresa"]}' AND codigo=$id";
       $sucesso = mysqli_query($conn, $sql);
 
       header('Location: categorias_produtos.php');
 
 		}
 
-		$consulta = "SELECT * FROM Categoria_Produto WHERE codigo ='{$id}'";
+		$consulta = "SELECT * FROM Categoria_Produto WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
@@ -36,8 +36,8 @@
       $status = "1";
     }
 
-		$sql = "INSERT INTO Categoria_Produto (nome, status)
-						VALUES ('{$nome}', '{$status}')";
+		$sql = "INSERT INTO Categoria_Produto (nome, status, empresa)
+						VALUES ('{$nome}', '{$status}', '{$_SESSION["empresa"]}')";
     $sucesso = mysqli_query($conn, $sql);
     
     header('Location: categorias_produtos.php');

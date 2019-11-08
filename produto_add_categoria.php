@@ -12,8 +12,8 @@
       if($quantidade > 0){
         for ($i=1; $i <= $quantidade; $i++) { 
           $categoria = $_POST['categoria'.$i];
-          $sql = "INSERT INTO Item_Cat_Produto (FK_Categoria_Produto_codigo, FK_Produto_codigo)
-              VALUES ('{$categoria}', '{$id}')";
+          $sql = "INSERT INTO Item_Cat_Produto (FK_Categoria_Produto_codigo, FK_Produto_codigo, empresa)
+              VALUES ('{$categoria}', '{$id}', '{$_SESSION["empresa"]}')";
           $sucesso = mysqli_query($conn, $sql);
         }
       }
@@ -21,7 +21,7 @@
       header('Location: categorias_produtos_view.php?id='.$id);
     }
 
-    $consulta = "SELECT * FROM Produto WHERE codigo ='{$id}'";
+    $consulta = "SELECT * FROM Produto WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
@@ -144,7 +144,7 @@
     html += '<select name="categoria'+total+'" class="form-control">';
 
     <?php
-    $consulta = "SELECT * FROM Categoria_Produto WHERE status='1';";
+    $consulta = "SELECT * FROM Categoria_Produto WHERE empresa = '{$_SESSION["empresa"]}' AND status='1';";
     $result = mysqli_query($conn, $consulta);
     if (mysqli_num_rows($result) > 0) {
       while($row = mysqli_fetch_assoc($result)) { ?>

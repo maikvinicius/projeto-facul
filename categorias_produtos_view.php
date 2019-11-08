@@ -10,7 +10,7 @@
 
   if(isset($_GET['excluir'])){
     $categoria = $_GET['excluir'];
-    $sql = "DELETE FROM Item_Cat_Produto WHERE codigo='{$categoria}'";
+    $sql = "DELETE FROM Item_Cat_Produto WHERE empresa = '{$_SESSION["empresa"]}' AND codigo='{$categoria}'";
     $sucesso = mysqli_query($conn, $sql);
 
     header('Location: categorias_produtos_view.php?id='.$id);
@@ -18,7 +18,7 @@
 
 	$consulta = "SELECT CP.*, ICP.codigo AS categoria_codigo FROM Item_Cat_Produto AS ICP
               INNER JOIN Categoria_Produto AS CP ON (CP.codigo = ICP.FK_Categoria_Produto_codigo)
-              WHERE ICP.FK_Produto_codigo = '{$id}';";
+              WHERE ICP.empresa = '{$_SESSION["empresa"]}' AND ICP.FK_Produto_codigo = '{$id}';";
   $result = mysqli_query($conn, $consulta);
 
 ?>

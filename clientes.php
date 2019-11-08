@@ -1,7 +1,7 @@
 <?php
 	include 'conexao.php';
 
-	$consulta = "SELECT * FROM Cliente;";
+	$consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}';";
   $result = mysqli_query($conn, $consulta);
 
 ?>

@@ -10,7 +10,7 @@
 
     $status = "1";
 
-    $consulta = "SELECT * FROM Cliente WHERE codigo ='{$cliente}'";
+    $consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$cliente}'";
 		$result = mysqli_query($conn, $consulta);
     $row = mysqli_fetch_assoc($result);
     $cliente_nome = $row["nome"];
@@ -24,18 +24,18 @@
         $produto = $_POST['produto'.$i];
         $quantidade = $_POST['quantidade'.$i];
 
-        $consulta = "SELECT * FROM Produto WHERE codigo = '{$produto}'";
+        $consulta = "SELECT * FROM Produto WHERE empresa = '{$_SESSION["empresa"]}' AND codigo = '{$produto}'";
         $result = mysqli_query($conn, $consulta);
         $row = mysqli_fetch_assoc($result);
         $total = $total + ($quantidade * $row["preco"]);
       }
     }
 
-		$sql = "INSERT INTO Venda (nome, valor, data_inicial, data_final, status, FK_Cliente_codigo, FK_Usuario_codigo)
-						VALUES ('{$cliente_nome}', '{$total}', '{$inicio}', '{$fim}', '{$status}', '{$cliente}', '{$usuario}')";
+		$sql = "INSERT INTO Venda (nome, valor, data_inicial, data_final, status, FK_Cliente_codigo, FK_Usuario_codigo, empresa)
+						VALUES ('{$cliente_nome}', '{$total}', '{$inicio}', '{$fim}', '{$status}', '{$cliente}', '{$usuario}', '{$_SESSION["empresa"]}')";
     $sucesso = mysqli_query($conn, $sql);
 
-    $consulta = "SELECT * FROM Venda ORDER BY codigo DESC LIMIT 1";
+    $consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC LIMIT 1";
     $result = mysqli_query($conn, $consulta);
     $row = mysqli_fetch_assoc($result);
     $venda = $row["codigo"];
@@ -45,13 +45,13 @@
         $produto = $_POST['produto'.$i];
         $quantidade = $_POST['quantidade'.$i];
 
-        $consulta = "SELECT * FROM Produto WHERE codigo = '{$produto}'";
+        $consulta = "SELECT * FROM Produto WHERE empresa = '{$_SESSION["empresa"]}' AND codigo = '{$produto}'";
         $result = mysqli_query($conn, $consulta);
         $row = mysqli_fetch_assoc($result);
         $preco = $row["preco"];
 
-        $sql = "INSERT INTO Item_Venda (quantidade, valor, FK_Venda_codigo, FK_Produto_codigo)
-						VALUES ('{$quantidade}', '{$preco}', '{$venda}', '{$produto}')";
+        $sql = "INSERT INTO Item_Venda (quantidade, valor, FK_Venda_codigo, FK_Produto_codigo, empresa)
+						VALUES ('{$quantidade}', '{$preco}', '{$venda}', '{$produto}', '{$_SESSION["empresa"]}')";
         $sucesso = mysqli_query($conn, $sql);
       }
     }
@@ -65,7 +65,7 @@
 
 		$id = (int) $_GET['id'];
 
-		$consulta = "SELECT * FROM Venda WHERE codigo ='{$id}'";
+		$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
     $venda = mysqli_fetch_assoc($result);
 
@@ -149,7 +149,7 @@
                           <label class="bmd-label-floating">Cliente</label>
                           <select <?php echo ($id>0) ? "disabled" : "" ?> name="cliente" class="form-control" required>
                           <?php
-                          $consulta = "SELECT * FROM Cliente WHERE status='1';";
+                          $consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND status='1';";
                           $result = mysqli_query($conn, $consulta);
                           if (mysqli_num_rows($result) > 0) {
                             while($row = mysqli_fetch_assoc($result)) { ?>
@@ -245,7 +245,7 @@
     html += '<select name="produto'+total+'" id="produto'+total+'" class="form-control">';
 
     <?php
-    $consulta = "SELECT * FROM Produto WHERE status='1';";
+    $consulta = "SELECT * FROM Produto WHERE empresa = '{$_SESSION["empresa"]}' AND status='1';";
     $result = mysqli_query($conn, $consulta);
     if (mysqli_num_rows($result) > 0) {
       while($row = mysqli_fetch_assoc($result)) { ?>
@@ -285,7 +285,7 @@
     });
 
     <?php
-    $consulta = "SELECT * FROM Produto WHERE status='1';";
+    $consulta = "SELECT * FROM Produto WHERE empresa = '{$_SESSION["empresa"]}' AND status='1';";
     $result = mysqli_query($conn, $consulta);
     if (mysqli_num_rows($result) > 0) {
       while($row = mysqli_fetch_assoc($result)) { ?>

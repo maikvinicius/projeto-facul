@@ -18,14 +18,14 @@
 			$sql = "UPDATE Cliente SET nome='{$nome}', 
                                  cnpj='{$cnpj}',
                                  status='{$status}'  
-                                 WHERE codigo=$id";
+                                 WHERE empresa = '{$_SESSION["empresa"]}' AND codigo=$id";
       $sucesso = mysqli_query($conn, $sql);
 
       header('Location: clientes.php');
 
 		}
 
-		$consulta = "SELECT * FROM Cliente WHERE codigo ='{$id}'";
+		$consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
@@ -41,11 +41,11 @@
       $status = "1";
     }
 
-		$sql = "INSERT INTO Cliente (nome, cnpj, status, FK_Usuario_codigo, FK_Captacao_codigo)
-						VALUES ('{$nome}', '{$cnpj}', '{$status}', '{$usuario}', '{$captacao}')";
+		$sql = "INSERT INTO Cliente (nome, cnpj, status, FK_Usuario_codigo, FK_Captacao_codigo, empresa)
+						VALUES ('{$nome}', '{$cnpj}', '{$status}', '{$usuario}', '{$captacao}', '{$_SESSION["empresa"]}')";
     $sucesso = mysqli_query($conn, $sql);
 
-    $consulta = "SELECT * FROM Cliente ORDER BY codigo DESC LIMIT 1";
+    $consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC LIMIT 1";
 		$result = mysqli_query($conn, $consulta);
     $row = mysqli_fetch_assoc($result);
     $cliente = $row["codigo"];
@@ -55,8 +55,8 @@
     if($quantidade > 0){
       for ($i=1; $i <= $quantidade; $i++) { 
         $categoria = $_POST['categoria'.$i];
-        $sql = "INSERT INTO Item_Cat_Cliente (FK_Categoria_Cliente_codigo, FK_Cliente_codigo)
-						VALUES ('{$categoria}', '{$cliente}')";
+        $sql = "INSERT INTO Item_Cat_Cliente (FK_Categoria_Cliente_codigo, FK_Cliente_codigo, empresa)
+						VALUES ('{$categoria}', '{$cliente}', '{$_SESSION["empresa"]}')";
         $sucesso = mysqli_query($conn, $sql);
       }
     }
@@ -268,7 +268,7 @@
       html += '<select name="categoria'+total+'" class="form-control">';
 
       <?php
-      $consulta = "SELECT * FROM Categoria_Cliente WHERE status='1';";
+      $consulta = "SELECT * FROM Categoria_Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND status='1';";
       $result = mysqli_query($conn, $consulta);
       if (mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)) { ?>

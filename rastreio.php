@@ -1,7 +1,7 @@
 <?php
 	include 'conexao.php';
 
-  $consulta = "SELECT * FROM Venda ORDER BY codigo DESC;";
+  $consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
   $result = mysqli_query($conn, $consulta);
 
 ?>
@@ -376,7 +376,7 @@ img
 
     $token = addslashes($_GET['token']);
 
-    $consulta = "SELECT * FROM Venda WHERE token = '{$token}'";
+    $consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' AND token = '{$token}'";
     $result = mysqli_query($conn, $consulta);
     $row = mysqli_fetch_assoc($result);
 
@@ -385,7 +385,7 @@ img
     }
 
     $consulta = "
-    SELECT * FROM Item_Etapa WHERE FK_Venda_Codigo = '{$row['codigo']}' 
+    SELECT * FROM Item_Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND FK_Venda_Codigo = '{$row['codigo']}' 
     AND FK_Etapa_Codigo in (
         SELECT codigo FROM Etapa 
         WHERE ordem >= (SELECT ordem FROM Etapa WHERE inicial = '1' LIMIT 1) AND 
@@ -402,7 +402,7 @@ img
     $i=0;
                       if (mysqli_num_rows($result) > 0) {
                           while($item = mysqli_fetch_assoc($result)) {
-                              $consulta = "SELECT * FROM Etapa WHERE codigo = '{$item['FK_Etapa_Codigo']}'";
+                              $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' AND codigo = '{$item['FK_Etapa_Codigo']}'";
                               $resultEtapa = mysqli_query($conn, $consulta);
                               $etapa = mysqli_fetch_assoc($resultEtapa);
                       ?>
