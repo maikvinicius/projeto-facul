@@ -480,8 +480,15 @@ var KanbanTest = new jKanban({
                   token: ""+$("#tokenValue").val()
                 })
                 .then(function (response) {
-                  console.log(response);
-                  document.location.reload(true);
+                  const boards = document.querySelector('[data-id="'+target.parentElement.dataset.id+'"]').parentElement;
+                  const childrens = Array.prototype.slice.call(boards.children)
+                  var posicao = 0;
+                  for(var i=0; i<childrens.length; i++){
+                    if(target.parentElement.dataset.id == childrens[i].dataset.id){
+                      posicao = i*300;
+                    }
+                  }
+                  window.location.href="<?php echo $_SERVER['PHP_SELF']; ?>?card="+posicao;
                 });
               });
 
@@ -642,6 +649,14 @@ var KanbanTest = new jKanban({
           aberto = 0;
         }
       }
+
+      function goToCard(){
+        const card = "<?php echo $_GET['card']; ?>";
+        if(card.length > 0){          
+          $('#myKanban').animate({scrollLeft:'+='+card},300);
+        }        
+      }
+      goToCard();
 
   </script>
 </body>
