@@ -1,12 +1,5 @@
 <?php
-session_start();
-
-$servername = "localhost";
-$username = "root";
-$password = "root";
-$dbname = "crm";
-
-$conn = mysqli_connect($servername, $username, $password, $dbname);
+include 'conexaoGeral.php';
 
 $_SESSION["logado"] = false;
 $error = false;
@@ -81,11 +74,21 @@ if(isset($_POST['login']) && isset($_POST['senha'])) {
         <input type="password" name="senha" class="form-control">
       </div>
 
-      <div class="form-group">
+      <div class="form-group" style="display:flex;justify-content:center;">
         <button type="submit" class="btn btn-primary">Logar</button>
+        &nbsp;&nbsp;
+        <a href="cadastro.php">
+          <button type="button" class="btn btn-primary">Cadastrar</button>
+        </a>
       </div>
 
   </form>
+
+  <div class="form-group" style="text-align:center;">
+      <a href="index.php">
+        <label style="font-size:20px;">Esqueci minha senha</label>
+      </a>
+    </div>
 
     
 
