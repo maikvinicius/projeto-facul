@@ -121,10 +121,10 @@
                 <div class="card-body">
                   <form action="#" method="post">
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nome</label>
-                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control">
+                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control" required>
                         </div>
                       </div>
                     </div>

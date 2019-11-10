@@ -144,7 +144,7 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nome</label>
-                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control">
+                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control" required>
                         </div>
                       </div>
                     </div>
@@ -153,7 +153,7 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Preço</label>
-                          <input type="text" name="preco" value="<?php echo ($id>0) ? $row['preco'] : "" ?>" class="form-control" onkeyup="k(this);">
+                          <input type="text" name="preco" value="<?php echo ($id>0) ? $row['preco'] : "" ?>" class="form-control" onkeyup="k(this);" required>
                         </div>
                       </div>
                     </div>

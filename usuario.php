@@ -258,7 +258,7 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nome</label>
-                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control">
+                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control" required>
                         </div>
                       </div>
                       <div class="col-md-6">
@@ -280,13 +280,13 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Login</label>
-                          <input type="text" name="login" value="<?php echo ($id>0) ? $row['login'] : "" ?>" class="form-control">
+                          <input type="text" name="login" value="<?php echo ($id>0) ? $row['login'] : "" ?>" class="form-control" required>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Senha</label>
-                          <input type="text" name="senha" value="<?php echo ($id>0) ? $row['senha'] : "" ?>" class="form-control">
+                          <input type="text" name="senha" value="<?php echo ($id>0) ? $row['senha'] : "" ?>" class="form-control" required>
                         </div>
                       </div>
                     </div>

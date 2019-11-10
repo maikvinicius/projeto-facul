@@ -69,11 +69,24 @@
 
 		$id = (int) $_GET['id'];
 
-		$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
-		$result = mysqli_query($conn, $consulta);
-    $venda = mysqli_fetch_assoc($result);
+    $consulta = "SELECT V.codigo as CodigoVenda,
+                        C.nome as cliente,
+                        C.cnpj as cnpj,
+                        V.valor as total,
+                        V.data_inicial as inicio,
+                        V.data_final as fim,
+                        V.token as token,
+                        U.nome as usuario,
+                        V.cadastro as cadastro
+                        FROM Venda as V
+                        INNER JOIN Cliente AS C ON (C.codigo = V.FK_Cliente_Codigo)
+                        INNER JOIN Usuario AS U ON (V.FK_Usuario_codigo = U.codigo)
+                        WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.codigo = '{$id}' AND V.status = 1;";
+    $result = mysqli_query($conn, $consulta);
+    $row = mysqli_fetch_assoc($result);
 
-	}
+  }
+  
 
 ?>
 <!DOCTYPE html>
@@ -141,12 +154,148 @@
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header card-header-primary">
+                <div class="card-header card-header-primary" style="display:flex;justify-content: space-between;">
+                <div>
+                <?php if($id > 0){ ?>
+                  <h4 class="card-title">Projeto</h4>
+                  <p class="card-category">Dados do seu projeto!</p>
+                <?php } else { ?>
                   <h4 class="card-title">Cadastrar Projeto</h4>
                   <p class="card-category">Informe os dados do novo projeto!</p>
+                <?php } ?>
+                </div>
+                <style>
+                .box-imprimir{
+                    display:flex;flex-direction:column;align-items:center;margin-right: 10px;
+                  }
+                  .box-imprimir:hover{
+                    cursor: pointer;
+                    opacity: 0.5;
+                  }
+                  </style>
+                    <div class="box-imprimir" onclick="javascript:window.print();">
+                      <i class="material-icons">print</i>
+                      Imprimir
+                    </div>
                 </div>
                 <div class="card-body">
-                  <form action="#" method="post">
+                  
+
+                    <?php if($id>0){ ?>
+                      
+                      <div class="row">
+
+                        <div class="col-md-12">
+                          <div style="display:grid;grid-template-columns: 1fr 1fr;">
+                            <div style="display:grid;grid-template-columns: 1fr 1fr;">
+                              <b>Cliente: </b><?php echo $row['cliente']; ?>
+                            </div>
+                            <div style="display:grid;grid-template-columns: 1fr 1fr;">
+                              <b>CNPJ: </b><?php echo $row['cnpj']; ?>
+                            </div>
+                          </div>
+                          <hr>
+                          <div style="display:grid;grid-template-columns: 1fr 1fr;">
+                            <div style="display:grid;grid-template-columns: 1fr 1fr;">
+                              <b>Data inicial: </b><?php echo date("d/m/Y", strtotime($row['inicio'])); ?>
+                              <b>Data final: </b><?php echo date("d/m/Y", strtotime($row['fim'])); ?>
+                            </div>
+                            <div style="display:grid;grid-template-columns: 1fr 1fr;">
+                              <b>Funcionário: </b><?php echo $row['usuario']; ?>
+                              <b>Data cadastro: </b><?php echo date("d/m/Y", strtotime($row['cadastro'])); ?>
+                            </div>
+                          </div>
+                          <hr>
+                          <?php if($row['token']){ ?>
+                            <p><b>Token: </b><?php echo $row['token'];?></p>
+                            <hr>
+                          <?php } ?> 
+                        </div>
+
+                        <div class="col-md-12">
+                          <br>
+                          <p><b>Projeto: </b> <?php echo $row['CodigoVenda']; ?></p>
+                        </div>
+
+                        <div class="col-md-12">
+
+                          <table class="table">
+                            <thead>
+                              <th>Produto</th>
+                              <th>Quantidade</th>
+                              <th>Total</th>
+                            </thead>
+                            <tbody>
+                                <?php
+                                  $consulta = "SELECT P.*, IV.quantidade, IV.valor FROM Produto AS P
+                                  INNER JOIN Item_Venda as IV ON (IV.FK_Produto_Codigo = P.codigo)
+                                  INNER JOIN Venda AS V on (V.codigo = IV.FK_Venda_Codigo)
+                                  WHERE P.empresa = '{$_SESSION["empresa"]}' AND V.codigo = '{$row['CodigoVenda']}';";
+                                  $resultProdutos = mysqli_query($conn, $consulta);
+                                  if (mysqli_num_rows($resultProdutos) > 0) {
+                                  while($rowProdutos = mysqli_fetch_assoc($resultProdutos)) { 
+                                ?>
+                                  <tr>
+                                    <td><?php echo $rowProdutos['nome']; ?></td>
+                                    <td><?php echo $rowProdutos['quantidade']; ?></td>
+                                    <td>R$ <?php echo number_format(($rowProdutos['valor']*$rowProdutos['quantidade']),2, ',', '.'); ?></td>
+                                  </tr>
+                                <?php } } ?>
+                                  <tr><td></td><td></td><td>R$ <?php echo number_format($row['total'],2, ',', '.'); ?></td></tr>
+                            </tbody>
+                          </table>
+
+                        </div>
+
+                        <div class="col-md-12">
+                        
+                          <p><b>Realizações: </b> </p>
+
+                          <table class="table">
+                            <thead>
+                              <th>Etapa</th>
+                              <th>Data</th>
+                              <th>Usuário</th>
+                              <th>Descrição</th>
+                            </thead>
+                            <tbody>
+                              <?php
+                                  $consulta = "SELECT IE.descricao, E.nome AS etapa, IE.data_inicial, U.nome AS usuario 
+                                  FROM Venda AS V
+                                  INNER JOIN Item_Etapa as IE ON (IE.FK_Venda_codigo = V.codigo)
+                                  INNER JOIN Etapa AS E ON (E.codigo = IE.FK_Etapa_Codigo)
+                                  INNER JOIN Usuario AS U ON (U.codigo = IE.FK_Usuario_Codigo)
+                                  WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.codigo= '{$row['CodigoVenda']}';";
+                                  $resultProdutos = mysqli_query($conn, $consulta);
+                                  if (mysqli_num_rows($resultProdutos) > 0) {
+                                  while($rowProdutos = mysqli_fetch_assoc($resultProdutos)) { 
+                              ?>
+                                    <tr>
+                                      <td><?php echo $rowProdutos['etapa']; ?></td>
+                                      <td><?php echo date("d/m/Y H:i", strtotime($rowProdutos['data_inicial'])); ?></td>
+                                      <td><?php echo $rowProdutos['usuario']; ?></td>
+                                      <td>
+                                      <div style="width:100%;max-width:500px;max-height:300px;overflow:auto;">
+                                      <?php echo $rowProdutos['descricao']; ?>
+                                      </div>
+                                      </td>
+                                    </tr>
+                              <?php } } else { ?>
+                                  <tr><td colspan="4" style="text-align:center;">Nenhuma etapa realizada.</td></tr>
+                              <?php } ?>
+                            </tbody>
+                          </table>
+                        
+                        </div>
+
+                      </div>
+
+                    <?php } ?>
+
+                  <?php if($id==0){ ?>
+
+                    <form action="#" method="post">
+
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
@@ -165,49 +314,47 @@
                       </div>
                     </div>
 
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label for="">Início do projeto</label>
-                          <input required <?php echo ($id>0) ? "disabled" : "" ?> type="date" name="inicio" class="form-control" value="<?php echo ($id>0) ? $venda['data_inicial'] : "" ?>">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="">Início do projeto</label>
+                            <input required <?php echo ($id>0) ? "disabled" : "" ?> type="date" name="inicio" class="form-control">
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label for="">fim do projeto</label>
-                          <input required <?php echo ($id>0) ? "disabled" : "" ?> type="date" name="fim" class="form-control" value="<?php echo ($id>0) ? $venda['data_final'] : "" ?>">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="">fim do projeto</label>
+                            <input required <?php echo ($id>0) ? "disabled" : "" ?> type="date" name="fim" class="form-control">
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <?php if($id==0){ ?>
-                    <div id="novasRespostas"></div>
-                    <input type="hidden" name="TotalNovas" id="TotalNovas" value="0">
-                    <div class="row">
-                      <div class="col-md-12">
-                        <button type="button" class="btn btn-primary" onclick="novaResposta()">Adicionar produto</button>
-                      </div>
-                    </div>
-
-                    <div class="row" style="margin-top:10px;">
-                      <div class="col-md-12">
-                        <div class="form-group pull-right">
-                          <h1 id="total">Total: R$ 0,00</h1>
+                      <div id="novasRespostas"></div>
+                      <input type="hidden" name="TotalNovas" id="TotalNovas" value="0">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <button type="button" class="btn btn-primary" onclick="novaResposta()">Adicionar produto</button>
                         </div>
                       </div>
-                    </div>
 
-                    <?php } else { ?>
-                    <h1>Valor R$ <?php echo $venda["valor"]; ?></h1>
+                      <div class="row" style="margin-top:10px;">
+                        <div class="col-md-12">
+                          <div class="form-group pull-right">
+                            <h1 id="total">Total: R$ 0,00</h1>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary pull-right">Cadastrar</button>
+                      
+                      <div class="clearfix"></div>
+                    </form>
+
                     <?php } ?>
-                    
-                    <button type="submit" class="btn btn-primary pull-right">Cadastrar</button>
-                    
-                    <div class="clearfix"></div>
-                  </form>
+
                 </div>
               </div>
             </div>

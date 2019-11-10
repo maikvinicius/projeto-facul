@@ -145,13 +145,13 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nome</label>
-                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control">
+                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control" required>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">CNPJ</label>
-                          <input type="text" name="cnpj" id="cnpj" maxlength="18" value="<?php echo ($id>0) ? $row['cnpj'] : "" ?>" class="form-control">
+                          <input type="text" name="cnpj" id="cnpj" maxlength="18" value="<?php echo ($id>0) ? $row['cnpj'] : "" ?>" class="form-control" required>
                         </div>
                       </div>
                     </div>
