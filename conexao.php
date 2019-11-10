@@ -34,3 +34,20 @@
     session_unset();
     header('Location: index.php');
   }
+
+  function havePermission($conn, $page, $type) {
+    $consulta = "SELECT * FROM Permissao WHERE FK_Usuario_codigo ='{$_SESSION["codigo"]}';";
+    $result = mysqli_query($conn, $consulta);
+    $rowPermissao = mysqli_fetch_assoc($result);
+
+    // types
+    // name_visualizar
+    // name_cadastrar
+    // name_editar
+    // name_desativar
+
+    if(unserialize($rowPermissao[$page])[$type] == 0){
+      header('Location: sem_permissao.php');
+    }
+
+  }

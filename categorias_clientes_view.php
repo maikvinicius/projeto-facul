@@ -21,6 +21,8 @@
               WHERE ICC.empresa = '{$_SESSION["empresa"]}' AND ICC.FK_Cliente_codigo = '{$id}';";
   $result = mysqli_query($conn, $consulta);
 
+  havePermission($conn, 'cliente', 'cliente_editar');
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

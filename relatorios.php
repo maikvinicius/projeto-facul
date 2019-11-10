@@ -4,6 +4,8 @@
 	$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
   $result = mysqli_query($conn, $consulta);
 
+  havePermission($conn, 'relatorio', 'relatorio_visualizar');
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

@@ -4,6 +4,8 @@
 	$id = 0;
 	if(isset($_GET['id'])){
 
+    havePermission($conn, 'cat_produto', 'cat_produto_editar');
+
 		$id = (int) $_GET['id'];
 
 		if(isset($_POST['nome'])){
@@ -42,7 +44,9 @@
     
     header('Location: categorias_produtos.php');
 
-	}
+	} else {
+    havePermission($conn, 'cat_produto', 'cat_produto_cadastrar');
+  }
 
 ?>
 <!DOCTYPE html>

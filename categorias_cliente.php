@@ -4,6 +4,8 @@
 	$id = 0;
 	if(isset($_GET['id'])){
 
+    havePermission($conn, 'cat_cliente', 'cat_cliente_editar');
+
 		$id = (int) $_GET['id'];
 
 		if(isset($_POST['nome'])){
@@ -42,7 +44,9 @@
     
     header('Location: categorias_clientes.php');
 
-	}
+	} else {
+    havePermission($conn, 'cat_cliente', 'cat_cliente_cadastrar');
+  }
 
 ?>
 <!DOCTYPE html>

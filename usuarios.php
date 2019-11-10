@@ -4,6 +4,8 @@
 	$consulta = "SELECT * FROM Usuario WHERE empresa = '{$_SESSION["empresa"]}';";
   $result = mysqli_query($conn, $consulta);
 
+  havePermission($conn, 'usuario', 'usuario_visualizar');
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

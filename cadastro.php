@@ -5,6 +5,69 @@ $_SESSION["logado"] = false;
 
 if(isset($_POST['login']) && isset($_POST['senha'])) {
 
+    $permissao_usuario = serialize([
+      "usuario_visualizar" => 1,
+      "usuario_cadastrar" => 1,
+      "usuario_editar" => 1,
+      "usuario_desativar" => 1
+    ]);
+
+    $permissao_cliente = serialize([
+      "cliente_visualizar" => 1,
+      "cliente_cadastrar" => 1,
+      "cliente_editar" => 1,
+      "cliente_desativar" => 1
+    ]);
+    
+    $permissao_cat_cliente = serialize([
+      "cat_cliente_visualizar" => 1,
+      "cat_cliente_cadastrar" => 1,
+      "cat_cliente_editar" => 1,
+      "cat_cliente_desativar" => 1
+    ]);
+
+    $permissao_cronograma = serialize([
+      "cronograma_visualizar" => 1,
+      "cronograma_cadastrar" => 1,
+      "cronograma_editar" => 1,
+      "cronograma_desativar" => 1
+    ]);
+
+    $permissao_etapa = serialize([
+      "etapa_visualizar" => 1,
+      "etapa_cadastrar" => 1,
+      "etapa_editar" => 1,
+      "etapa_desativar" => 1
+    ]);
+
+    $permissao_projeto = serialize([
+      "projeto_visualizar" => 1,
+      "projeto_cadastrar" => 1,
+      "projeto_editar" => 1,
+      "projeto_desativar" => 1
+    ]);
+
+    $permissao_produto = serialize([
+      "produto_visualizar" => 1,
+      "produto_cadastrar" => 1,
+      "produto_editar" => 1,
+      "produto_desativar" => 1
+    ]);
+
+    $permissao_cat_produto = serialize([
+      "cat_produto_visualizar" => 1,
+      "cat_produto_cadastrar" => 1,
+      "cat_produto_editar" => 1,
+      "cat_produto_desativar" => 1
+    ]);
+
+    $permissao_relatorio = serialize([
+      "relatorio_visualizar" => 1,
+      "relatorio_cadastrar" => 1,
+      "relatorio_editar" => 1,
+      "relatorio_desativar" => 1
+    ]);
+
     $nome = addslashes($_POST['nome']);
     $telefone = addslashes($_POST['telefone']);
     $email = addslashes($_POST['email']);
@@ -29,6 +92,12 @@ if(isset($_POST['login']) && isset($_POST['senha'])) {
     $consulta = "SELECT * FROM Usuario WHERE login = '{$login}' AND senha ='{$senha}' AND status = '1'";
     $result = mysqli_query($conn, $consulta);
     $row = mysqli_fetch_assoc($result);
+
+    $sql = "INSERT INTO Permissao (usuario, cliente, cat_cliente, cronograma, etapa, projeto, produto, cat_produto, relatorio, FK_Usuario_codigo)
+						VALUES ('{$permissao_usuario}', '{$permissao_cliente}', '{$permissao_cat_cliente}', 
+                    '{$permissao_cronograma}', '{$permissao_etapa}', '{$permissao_projeto}',
+                    '{$permissao_produto}', '{$permissao_cat_produto}', '{$permissao_relatorio}',  '{$row["codigo"]}')";
+    $sucesso = mysqli_query($conn, $sql);
 
     if($row){
         $_SESSION["logado"] = true;

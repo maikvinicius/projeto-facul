@@ -21,6 +21,8 @@
               WHERE ICP.empresa = '{$_SESSION["empresa"]}' AND ICP.FK_Produto_codigo = '{$id}';";
   $result = mysqli_query($conn, $consulta);
 
+  havePermission($conn, 'produto', 'produto_editar');
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

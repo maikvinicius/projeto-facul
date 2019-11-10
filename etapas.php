@@ -4,6 +4,8 @@
 	$consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY ordem ASC;";
   $result = mysqli_query($conn, $consulta);
 
+  havePermission($conn, 'etapa', 'etapa_visualizar');
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

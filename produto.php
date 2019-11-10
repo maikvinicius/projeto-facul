@@ -4,6 +4,8 @@
 	$id = 0;
 	if(isset($_GET['id'])){
 
+    havePermission($conn, 'produto', 'produto_editar');
+
 		$id = (int) $_GET['id'];
 
 		if(isset($_POST['nome'])){
@@ -62,7 +64,9 @@
     
     header('Location: produtos.php');
 
-	}
+	} else {
+    havePermission($conn, 'produto', 'produto_cadastrar');
+  }
 
 ?>
 <!DOCTYPE html>

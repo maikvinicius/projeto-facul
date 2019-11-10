@@ -4,6 +4,8 @@
 	$id = 0;
 	if(isset($_GET['id'])){
 
+    havePermission($conn, 'etapa', 'etapa_editar');
+
 		$id = (int) $_GET['id'];
 
 		if(isset($_POST['nome'])){
@@ -72,7 +74,9 @@
     
     header('Location: etapas.php');
 
-	}
+	} else {
+    havePermission($conn, 'etapa', 'etapa_cadastrar');
+  }
 
 ?>
 <!DOCTYPE html>

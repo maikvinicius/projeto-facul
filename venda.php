@@ -58,10 +58,14 @@
     
     header('Location: vendas.php');
 
+  } else {
+    havePermission($conn, 'projeto', 'projeto_cadastrar');
   }
   
   $id = 0;
 	if(isset($_GET['id'])){
+
+    havePermission($conn, 'projeto', 'projeto_editar');
 
 		$id = (int) $_GET['id'];
 

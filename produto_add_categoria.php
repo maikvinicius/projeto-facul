@@ -25,7 +25,9 @@
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
-	}
+  }
+
+  havePermission($conn, 'produto', 'produto_editar');
 
 ?>
 <!DOCTYPE html>

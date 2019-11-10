@@ -1,8 +1,75 @@
 <?php
-	include 'conexao.php';
+  include 'conexao.php';
+  
+  if(isset($_POST['nome'])){
+    $permissao_usuario = serialize([
+      "usuario_visualizar" => (isset($_POST['usuario_visualizar'])) ? 1 : 0,
+      "usuario_cadastrar" => (isset($_POST['usuario_cadastrar'])) ? 1 : 0,
+      "usuario_editar" => (isset($_POST['usuario_editar'])) ? 1 : 0,
+      "usuario_desativar" => (isset($_POST['usuario_desativar'])) ? 1 : 0
+    ]);
+
+    $permissao_cliente = serialize([
+      "cliente_visualizar" => (isset($_POST['cliente_visualizar'])) ? 1 : 0,
+      "cliente_cadastrar" => (isset($_POST['cliente_cadastrar'])) ? 1 : 0,
+      "cliente_editar" => (isset($_POST['cliente_editar'])) ? 1 : 0,
+      "cliente_desativar" => (isset($_POST['cliente_desativar'])) ? 1 : 0
+    ]);
+    
+    $permissao_cat_cliente = serialize([
+      "cat_cliente_visualizar" => (isset($_POST['cat_cliente_visualizar'])) ? 1 : 0,
+      "cat_cliente_cadastrar" => (isset($_POST['cat_cliente_cadastrar'])) ? 1 : 0,
+      "cat_cliente_editar" => (isset($_POST['cat_cliente_editar'])) ? 1 : 0,
+      "cat_cliente_desativar" => (isset($_POST['cat_cliente_desativar'])) ? 1 : 0
+    ]);
+
+    $permissao_cronograma = serialize([
+      "cronograma_visualizar" => (isset($_POST['cronograma_visualizar'])) ? 1 : 0,
+      "cronograma_cadastrar" => (isset($_POST['cronograma_cadastrar'])) ? 1 : 0,
+      "cronograma_editar" => (isset($_POST['cronograma_editar'])) ? 1 : 0,
+      "cronograma_desativar" => (isset($_POST['cronograma_desativar'])) ? 1 : 0
+    ]);
+
+    $permissao_etapa = serialize([
+      "etapa_visualizar" => (isset($_POST['etapa_visualizar'])) ? 1 : 0,
+      "etapa_cadastrar" => (isset($_POST['etapa_cadastrar'])) ? 1 : 0,
+      "etapa_editar" => (isset($_POST['etapa_editar'])) ? 1 : 0,
+      "etapa_desativar" => (isset($_POST['etapa_desativar'])) ? 1 : 0
+    ]);
+
+    $permissao_projeto = serialize([
+      "projeto_visualizar" => (isset($_POST['projeto_visualizar'])) ? 1 : 0,
+      "projeto_cadastrar" => (isset($_POST['projeto_cadastrar'])) ? 1 : 0,
+      "projeto_editar" => (isset($_POST['projeto_editar'])) ? 1 : 0,
+      "projeto_desativar" => (isset($_POST['projeto_desativar'])) ? 1 : 0
+    ]);
+
+    $permissao_produto = serialize([
+      "produto_visualizar" => (isset($_POST['produto_visualizar'])) ? 1 : 0,
+      "produto_cadastrar" => (isset($_POST['produto_cadastrar'])) ? 1 : 0,
+      "produto_editar" => (isset($_POST['produto_editar'])) ? 1 : 0,
+      "produto_desativar" => (isset($_POST['produto_desativar'])) ? 1 : 0
+    ]);
+
+    $permissao_cat_produto = serialize([
+      "cat_produto_visualizar" => (isset($_POST['cat_produto_visualizar'])) ? 1 : 0,
+      "cat_produto_cadastrar" => (isset($_POST['cat_produto_cadastrar'])) ? 1 : 0,
+      "cat_produto_editar" => (isset($_POST['cat_produto_editar'])) ? 1 : 0,
+      "cat_produto_desativar" => (isset($_POST['cat_produto_desativar'])) ? 1 : 0
+    ]);
+
+    $permissao_relatorio = serialize([
+      "relatorio_visualizar" => (isset($_POST['relatorio_visualizar'])) ? 1 : 0,
+      "relatorio_cadastrar" => (isset($_POST['relatorio_cadastrar'])) ? 1 : 0,
+      "relatorio_editar" => (isset($_POST['relatorio_editar'])) ? 1 : 0,
+      "relatorio_desativar" => (isset($_POST['relatorio_desativar'])) ? 1 : 0
+    ]);
+  }
 
 	$id = 0;
 	if(isset($_GET['id'])){
+
+    havePermission($conn, 'usuario', 'usuario_editar');
 
 		$id = (int) $_GET['id'];
 
@@ -24,8 +91,21 @@
                                  login='{$login}', 
                                  senha='{$senha}',
                                  status='{$status}'  
-                                 WHERE empresa = '{$_SESSION["empresa"]}' AND codigo=$id";
+              WHERE empresa = '{$_SESSION["empresa"]}' AND codigo='{$id}'";
       $sucesso = mysqli_query($conn, $sql);
+
+      $sql = "UPDATE Permissao SET
+                     usuario='{$permissao_usuario}', cliente='{$permissao_cliente}', 
+                     cat_cliente='{$permissao_cat_cliente}', cronograma='{$permissao_cronograma}', 
+                     etapa='{$permissao_etapa}', projeto='{$permissao_projeto}', 
+                     produto='{$permissao_produto}', cat_produto='{$permissao_cat_produto}', 
+                     relatorio='{$permissao_relatorio}' WHERE FK_Usuario_codigo = '{$id}';";
+
+      $sucesso = mysqli_query($conn, $sql);
+
+      $consulta = "SELECT * FROM Permissao WHERE FK_Usuario_codigo ='{$id}'";
+      $result = mysqli_query($conn, $consulta);
+      $rowPermissao = mysqli_fetch_assoc($result);
 
       header('Location: usuarios.php');
 
@@ -33,7 +113,11 @@
 
 		$consulta = "SELECT * FROM Usuario WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
-		$row = mysqli_fetch_assoc($result);
+    $row = mysqli_fetch_assoc($result);
+    
+    $consulta = "SELECT * FROM Permissao WHERE FK_Usuario_codigo ='{$id}'";
+		$result = mysqli_query($conn, $consulta);
+    $rowPermissao = mysqli_fetch_assoc($result);
 
 	} else if(isset($_POST['nome'])){
     
@@ -42,6 +126,7 @@
     $email = addslashes($_POST['email']);
     $login = addslashes($_POST['login']);
     $senha = addslashes($_POST['senha']);
+    $responsavel = $_SESSION["codigo"];
 
     $status = "0";
     if(isset($_POST['status'])){
@@ -51,10 +136,22 @@
 		$sql = "INSERT INTO Usuario (nome, telefone, email, login, senha, status, empresa)
 						VALUES ('{$nome}', '{$telefone}', '{$email}', '{$login}', '{$senha}', '{$status}', '{$_SESSION["empresa"]}')";
     $sucesso = mysqli_query($conn, $sql);
+
+    $consulta = "SELECT * FROM Usuario ORDER BY codigo DESC LIMIT 1";
+    $result = mysqli_query($conn, $consulta);
+    $row = mysqli_fetch_assoc($result);
+
+    $sql = "INSERT INTO Permissao (usuario, cliente, cat_cliente, cronograma, etapa, projeto, produto, cat_produto, relatorio, FK_Usuario_codigo)
+						VALUES ('{$permissao_usuario}', '{$permissao_cliente}', '{$permissao_cat_cliente}', 
+                    '{$permissao_cronograma}', '{$permissao_etapa}', '{$permissao_projeto}',
+                    '{$permissao_produto}', '{$permissao_cat_produto}', '{$permissao_relatorio}',  '{$row["codigo"]}')";
+    $sucesso = mysqli_query($conn, $sql);
     
     header('Location: usuarios.php');
 
-	}
+	} else {
+    havePermission($conn, 'usuario', 'usuario_cadastrar');
+  }
 
 ?>
 <!DOCTYPE html>
@@ -178,7 +275,7 @@
                       </div>
                     </div>
 
-                    <!-- <div class="row">
+                    <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
                           <h3>Cadastrar Permissões</h3>
@@ -191,17 +288,17 @@
                           <label>Usuários</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['usuario'])['usuario_visualizar']) ? "checked" : "" ?> name="usuario_visualizar" value="1"> Visualizar</label>
                             </div>
                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['usuario'])['usuario_cadastrar']) ? "checked" : "" ?> name="usuario_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['usuario'])['usuario_editar']) ? "checked" : "" ?> name="usuario_editar" value="1"> Editar</label>
                             </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['usuario'])['usuario_desativar']) ? "checked" : "" ?> name="usuario_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
@@ -210,55 +307,55 @@
                           <label>Clientes</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cliente'])['cliente_visualizar']) ? "checked" : "" ?> name="cliente_visualizar" value="1"> Visualizar</label>
                             </div>
                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cliente'])['cliente_cadastrar']) ? "checked" : "" ?> name="cliente_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cliente'])['cliente_editar']) ? "checked" : "" ?> name="cliente_editar" value="1"> Editar</label>
                             </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cliente'])['cliente_desativar']) ? "checked" : "" ?> name="cliente_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label>Categoria Clientes</label>
+                          <label>Categoria de Clientes</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_cliente'])['cat_cliente_visualizar']) ? "checked" : "" ?> name="cat_cliente_visualizar" value="1"> Visualizar</label>
                             </div>
                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_cliente'])['cat_cliente_cadastrar']) ? "checked" : "" ?> name="cat_cliente_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_cliente'])['cat_cliente_editar']) ? "checked" : "" ?> name="cat_cliente_editar" value="1"> Editar</label>
                             </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_cliente'])['cat_cliente_desativar']) ? "checked" : "" ?> name="cat_cliente_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label>Captação</label>
+                          <label>Cronograma</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cronograma'])['cronograma_visualizar']) ? "checked" : "" ?> name="cronograma_visualizar" value="1"> Manipular</label>
                             </div>
-                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
-                            </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                           <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cronograma'])['cronograma_cadastrar']) ? "checked" : "" ?> name="cronograma_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cronograma'])['cronograma_editar']) ? "checked" : "" ?> name="cronograma_editar" value="1"> Editar</label>
+                            </div> -->
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cronograma'])['cronograma_desativar']) ? "checked" : "" ?> name="cronograma_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
@@ -267,112 +364,94 @@
                     <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label>Tarefa</label>
+                          <label>Etapas</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['etapa'])['etapa_visualizar']) ? "checked" : "" ?> name="etapa_visualizar" value="1"> Visualizar</label>
                             </div>
                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['etapa'])['etapa_cadastrar']) ? "checked" : "" ?> name="etapa_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['etapa'])['etapa_editar']) ? "checked" : "" ?> name="etapa_editar" value="1"> Editar</label>
                             </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['etapa'])['etapa_desativar']) ? "checked" : "" ?> name="etapa_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label>Etapa</label>
+                          <label>Projetos</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_visualizar']) ? "checked" : "" ?> name="projeto_visualizar" value="1"> Visualizar</label>
                             </div>
                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_cadastrar']) ? "checked" : "" ?> name="projeto_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_editar']) ? "checked" : "" ?> name="projeto_editar" value="1"> Editar</label>
                             </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_desativar']) ? "checked" : "" ?> name="projeto_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label>Venda</label>
+                          <label>Produtos</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['produto'])['produto_visualizar']) ? "checked" : "" ?> name="produto_visualizar" value="1"> Visualizar</label>
                             </div>
                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['produto'])['produto_cadastrar']) ? "checked" : "" ?> name="produto_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['produto'])['produto_editar']) ? "checked" : "" ?> name="produto_editar" value="1"> Editar</label>
                             </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['produto'])['produto_desativar']) ? "checked" : "" ?> name="produto_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label>Produto</label>
+                          <label>Categoria de Produtos</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_produto'])['cat_produto_visualizar']) ? "checked" : "" ?> name="cat_produto_visualizar" value="1"> Visualizar</label>
                             </div>
                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_produto'])['cat_produto_cadastrar']) ? "checked" : "" ?> name="cat_produto_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_produto'])['cat_produto_editar']) ? "checked" : "" ?> name="cat_produto_editar" value="1"> Editar</label>
                             </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
-                            </div>
+                            <!-- <div class="checkbox">
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['cat_produto'])['cat_produto_desativar']) ? "checked" : "" ?> name="cat_produto_desativar" value="1"> Desativar</label>
+                            </div> -->
                           </div>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div class="row">
                       <div class="col-md-12">
-                        <div class="form-group">
-                          <label>Categoria Produtos</label>
                           <div class="form-group">
-                          <div class="checkbox">
-                              <label><input type="checkbox" value=""> Visualizar</label>
-                            </div>    
-                           <div class="checkbox">
-                              <label><input type="checkbox" value=""> Cadastrar</label>
-                            </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Editar</label>
-                            </div>
-                            <div class="checkbox">
-                              <label><input type="checkbox" value=""> Desativar</label>
+                            <label>Relatórios</label>
+                            <div class="form-group">
+                              <div class="checkbox">
+                                <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['relatorio'])['relatorio_visualizar']) ? "checked" : "" ?> name="relatorio_visualizar" value="1"> Visualizar</label>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label>Telefone</label>
-                                <input type="date" class="form-control">
-                            </div>
-                        </div>
-                    </div> -->
                     
                     <?php if ($id>0) { ?>
                       <button type="submit" class="btn btn-primary pull-right">Atualizar</button>

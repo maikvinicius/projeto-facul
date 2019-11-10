@@ -4,6 +4,8 @@
 	$id = 0;
 	if(isset($_GET['id'])){
 
+    havePermission($conn, 'cliente', 'cliente_editar');
+
 		$id = (int) $_GET['id'];
 
 		if(isset($_POST['nome'])){
@@ -63,7 +65,9 @@
     
     header('Location: clientes.php');
 
-	}
+	} else {
+    havePermission($conn, 'cliente', 'cliente_cadastrar');
+  }
 
 ?>
 <!DOCTYPE html>

@@ -25,7 +25,9 @@
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
-	}
+  }
+  
+  havePermission($conn, 'cliente', 'cliente_editar');
 
 ?>
 <!DOCTYPE html>
