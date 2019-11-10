@@ -4,70 +4,40 @@
 	$id = 0;
 	if(isset($_GET['id'])){
 
-    havePermission($conn, 'cliente', 'cliente_editar');
+    $id = (int) $_GET['id'];
 
-		$id = (int) $_GET['id'];
+    if(isset($_POST['cep'])){
+      $rua = addslashes($_POST['rua']);
+      $numero = addslashes($_POST['numero']);
+      $complemento = addslashes($_POST['complemento']);
+      $bairro = addslashes($_POST['bairro']);
+      $cidade = addslashes($_POST['cidade']);
+      $uf = addslashes($_POST['uf']);
+      $cep = addslashes($_POST['cep']);
 
-		if(isset($_POST['nome'])){
-      $nome = addslashes($_POST['nome']);
-      $cnpj = addslashes($_POST['cnpj']);
-
-      $status = "0";
-      if(isset($_POST['status'])){
-        $status = "1";
-      }
-      
-			$sql = "UPDATE Cliente SET nome='{$nome}', 
-                                 cnpj='{$cnpj}',
-                                 status='{$status}'  
-                                 WHERE empresa = '{$_SESSION["empresa"]}' AND codigo=$id";
+      $sql = "INSERT INTO Endereco (rua, numero, complemento, bairro, cidade, uf, cep)
+              VALUES ('{$rua}', '{$numero}', '{$complemento}', '{$bairro}', '{$cidade}', '{$uf}', '{$cep}')";
       $sucesso = mysqli_query($conn, $sql);
 
-      header('Location: clientes.php');
+      $consulta = "SELECT * FROM Endereco ORDER BY codigo DESC LIMIT 1";
+      $result = mysqli_query($conn, $consulta);
+      $row = mysqli_fetch_assoc($result);
+      $endereco = $row["codigo"];
 
-		}
+      $sql = "INSERT INTO Item_Endereco (FK_Cliente_codigo, FK_Endereco_codigo)
+              VALUES ('{$id}', '{$endereco}')";
+      $sucesso = mysqli_query($conn, $sql);
 
-		$consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
+      header('Location: enderecos_clientes_view.php?id='.$id);
+    }
+
+    $consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND codigo ='{$id}'";
 		$result = mysqli_query($conn, $consulta);
 		$row = mysqli_fetch_assoc($result);
 
-	} else if(isset($_POST['nome'])){
-    
-    $nome = addslashes($_POST['nome']);
-    $cnpj = addslashes($_POST['cnpj']);
-    $captacao = addslashes($_POST['captacao']);
-    $usuario = $_SESSION['codigo'];
-
-    $status = "0";
-    if(isset($_POST['status'])){
-      $status = "1";
-    }
-
-		$sql = "INSERT INTO Cliente (nome, cnpj, status, FK_Usuario_codigo, FK_Captacao_codigo, empresa)
-						VALUES ('{$nome}', '{$cnpj}', '{$status}', '{$usuario}', '{$captacao}', '{$_SESSION["empresa"]}')";
-    $sucesso = mysqli_query($conn, $sql);
-
-    $consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC LIMIT 1";
-		$result = mysqli_query($conn, $consulta);
-    $row = mysqli_fetch_assoc($result);
-    $cliente = $row["codigo"];
-
-    $quantidade = (int) $_POST['TotalNovas'];
-
-    if($quantidade > 0){
-      for ($i=1; $i <= $quantidade; $i++) { 
-        $categoria = $_POST['categoria'.$i];
-        $sql = "INSERT INTO Item_Cat_Cliente (FK_Categoria_Cliente_codigo, FK_Cliente_codigo, empresa)
-						VALUES ('{$categoria}', '{$cliente}', '{$_SESSION["empresa"]}')";
-        $sucesso = mysqli_query($conn, $sql);
-      }
-    }
-    
-    header('Location: clientes.php');
-
-	} else {
-    havePermission($conn, 'cliente', 'cliente_cadastrar');
   }
+  
+  havePermission($conn, 'cliente', 'cliente_editar');
 
 ?>
 <!DOCTYPE html>
@@ -91,6 +61,27 @@
   <link href="assets/demo/demo.css" rel="stylesheet" />
 </head>
 
+<script type="text/javascript">
+    /* M�scaras ER */
+function mascara(o,f){
+    v_obj=o
+    v_fun=f
+    setTimeout("execmascara()",1)
+}
+function execmascara(){
+    v_obj.value=v_fun(v_obj.value)
+}
+//Mascara para CEP
+function mcep(v){
+	v=v.replace(/\D/g,"")                 //Remove tudo o que n�o � d�gito
+	v=v.replace(/(\d{5})(\d)/,"$1-$2")   //Coloca ponto entre o antepenultimo digito
+	return v
+}
+function id( el ){
+    return document.getElementById( el );
+}
+</script>
+
 <body class="">
   <div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white" data-image="assets/img/sidebar-1.jpg">
@@ -113,7 +104,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Cliente</a>
+            <a class="navbar-brand" href="#pablo">Endereços</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -136,22 +127,17 @@
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <h4 class="card-title">Cadastrar Cliente</h4>
-                  <p class="card-category">Informe os dados do cliente!</p>
+                <h4 class="card-title ">Endereços</h4>
+                  <p class="card-category">Endereços vinculados ao cliente</p>
                 </div>
                 <div class="card-body">
                   <form action="#" method="post">
+
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Nome</label>
-                          <input type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control">
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">CNPJ</label>
-                          <input type="text" name="cnpj" id="cnpj" maxlength="18" value="<?php echo ($id>0) ? $row['cnpj'] : "" ?>" class="form-control">
+                          <input disabled type="text" name="nome" value="<?php echo ($id>0) ? $row['nome'] : "" ?>" class="form-control">
                         </div>
                       </div>
                     </div>
@@ -159,46 +145,67 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
-                          <label class="bmd-label-floating">Captacao</label>
-                          <select name="captacao" class="form-control">
-                          <option value="1" <?php echo ($row['captacao'] == 1) ? "selected" : "" ?>>Redes Sociais</option>
-                          <option value="2" <?php echo ($row['captacao'] == 2) ? "selected" : "" ?>>E-mail</option>
-                          <option value="3" <?php echo ($row['captacao'] == 3) ? "selected" : "" ?>>Site</option>
-                          <option value="4" <?php echo ($row['captacao'] == 4) ? "selected" : "" ?>>Indicação</option>
-                          <option value="5" <?php echo ($row['captacao'] == 5) ? "selected" : "" ?>>Orgânico</option>
-                          </select>
+                          <label class="bmd-label-floating">CEP</label>
+                          <input type="text" name="cep" class="form-control" value="" required onkeyup="buscaCep(),mascara( this, mcep )" maxlength="9">
                         </div>
                       </div>
                     </div>
 
-                    <div class="row">
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label>Status</label>
-                          <div class="form-group">
-                          <div class="checkbox">
-                              <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? checked : "" ?>> Ativar</label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <?php if($id==0){ ?>
-                    <div id="novasRespostas"></div>
-                    <input type="hidden" name="TotalNovas" id="TotalNovas" value="0">
                     <div class="row">
                       <div class="col-md-12">
-                        <button type="button" class="btn btn-primary" onclick="novaResposta()">Adicionar categoria</button>
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Endereço</label>
+                          <input type="text" name="rua" class="form-control" value="">
+                        </div>
                       </div>
                     </div>
-                    <?php } ?>
-                    
-                    <?php if ($id>0) { ?>
-                      <button type="submit" class="btn btn-primary pull-right">Atualizar</button>
-                    <?php } else { ?>
-                      <button type="submit" class="btn btn-primary pull-right">Cadastrar</button>
-                    <?php } ?>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Número</label>
+                          <input type="text" name="numero" class="form-control" value="">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Complemento</label>
+                          <input type="text" name="complemento" class="form-control" value="">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Bairro</label>
+                          <input type="text" name="bairro" class="form-control" value="">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">Cidade</label>
+                          <input type="text" name="cidade" class="form-control" value="">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="bmd-label-floating">UF</label>
+                          <input type="text" name="uf" class="form-control" value="">
+                        </div>
+                      </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary pull-right">Cadastrar</button>
                     
                     <div class="clearfix"></div>
                   </form>
@@ -210,6 +217,33 @@
       </div>
     </div>
   </div>
+
+  
+  </select>
+  <script>
+  function preencheCampos(json) {
+    document.querySelector('input[name=rua]').value = json.logradouro;
+    document.querySelector('input[name=bairro]').value = json.bairro;
+    document.querySelector('input[name=complemento]').value = json.complemento;
+    document.querySelector('input[name=cidade]').value = json.localidade;
+    document.querySelector('input[name=uf]').value = json.uf;
+  }
+  function buscaCep() {
+    let inputCep = document.querySelector('input[name=cep]');
+    let cep = inputCep.value.replace('-', '');
+    let url = 'http://viacep.com.br/ws/' + cep + '/json';
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        if (xhr.status = 200)
+        console.log(xhr.responseText);
+        preencheCampos(JSON.parse(xhr.responseText));
+      }
+    }
+    xhr.send();
+  }
+  </script>
   <!--   Core JS Files   -->
   <script src="assets/js/core/jquery.min.js"></script>
   <script src="assets/js/core/popper.min.js"></script>
@@ -252,43 +286,6 @@
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script src="assets/demo/demo.js"></script>
   <script src="assets/js/global.js"></script>
-
-    <script>
-    $("#cnpj").on("keyup", function(e){
-      $(this).val(
-          $(this).val()
-          .replace(/\D/g, '')
-          .replace(/^(\d{2})(\d{3})?(\d{3})?(\d{4})?(\d{2})?/, "$1.$2.$3/$4-$5"));
-    });
-
-    function novaResposta(){
-      var total = parseInt($("#TotalNovas").val());
-      total = total + 1;
-      var html = '';
-
-      html += '<div class="row">';
-      html += '<div class="col-md-12">';
-      html += '<div class="form-group">';
-      html += '<select name="categoria'+total+'" class="form-control">';
-
-      <?php
-      $consulta = "SELECT * FROM Categoria_Cliente WHERE empresa = '{$_SESSION["empresa"]}' AND status='1';";
-      $result = mysqli_query($conn, $consulta);
-      if (mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) { ?>
-      html += '<option value="<?php echo $row['codigo']; ?>"><?php echo $row['nome']; ?></option>';
-        <?php }} ?>
-      html += '</select>';
-      html += '</div>';
-      html += '</div>';
-      html += '</div>';
-      html += '<div style="clear:both;"></div>';
-
-      $("#novasRespostas").append(html);
-      $("#TotalNovas").val(total);
-    }
-    </script>
-
 </body>
 
 </html>

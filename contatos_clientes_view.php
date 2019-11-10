@@ -1,10 +1,31 @@
 <?php
 	include 'conexao.php';
+  
+  $id = 0;
+	if(isset($_GET['id'])){
+		$id = (int) $_GET['id'];
+	} else {
+    header('Location: clientes.php');
+  }
 
-	$consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}';";
+  if(isset($_GET['excluir'])){
+    $itemContato = $_GET['excluir'];
+    $sql = "DELETE FROM Item_Contato WHERE codigo='{$itemContato}'";
+    $sucesso = mysqli_query($conn, $sql);
+
+    $contato = $_GET['contato'];
+    $sql = "DELETE FROM Contato WHERE codigo='{$contato}'";
+    $sucesso = mysqli_query($conn, $sql);
+
+    header('Location: contatos_clientes_view.php?id='.$id);
+  }
+
+	$consulta = "SELECT C.*, IC.codigo as item_codigo FROM Item_Contato AS IC
+              INNER JOIN Contato AS C ON (C.codigo = IC.FK_Contato_codigo)
+              WHERE IC.FK_Cliente_codigo = '{$id}';";
   $result = mysqli_query($conn, $consulta);
 
-  havePermission($conn, 'cliente', 'cliente_visualizar');
+  havePermission($conn, 'cliente', 'cliente_editar');
 
 ?>
 <!DOCTYPE html>
@@ -45,7 +66,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Clientes</a>
+            <a class="navbar-brand" href="#pablo">Contatos</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -65,7 +86,7 @@
             </form> -->
             <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="cliente.php">
+                <a class="nav-link" href="cliente_add_contato.php?id=<?php echo $id; ?>">
                   <i class="material-icons">add</i>
                   <p class="d-lg-none d-md-block">
                     Novo
@@ -85,17 +106,18 @@
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <h4 class="card-title ">Clientes</h4>
-                  <p class="card-category"> Toda sua carteira de clientes</p>
+                  <h4 class="card-title ">Contatos</h4>
+                  <p class="card-category">Contatos vinculados ao cliente</p>
                 </div>
                 <div class="card-body">
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
                         <th>Nome</th>
-                        <th>CNPJ</th>
+                        <th>Telefone</th>
+                        <th>Celular</th>
+                        <th>Email</th>
                         <th>Responsável</th>
-                        <th>Status</th>
                         <th>Ação</th>
                       </thead>
                       <tbody>
@@ -105,27 +127,19 @@
                       ?>
                         <tr>
                           <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo $row['cnpj']; ?></td>
-                          <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo ($row['status'])? "Ativo" : "Desativado"; ?></td>
-                          <td class="text-primary" style="display:grid;grid-template-columns:1fr 1fr;">
-                            <a href="cliente.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Editar</button>
-                            </a>
-                            <a href="categorias_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Categorias</button>
-                            </a>
-                            <a href="enderecos_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Endereços</button>
-                            </a>
-                            <a href="contatos_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Contatos</button>
+                          <td><?php echo $row['telefone']; ?></td>
+                          <td><?php echo $row['celular']; ?></td>
+                          <td><?php echo $row['email']; ?></td>
+                          <td><?php echo ($row['responsavel'] == 1) ? 'SIM' : ' - '; ?></td>
+                          <td class="text-primary">
+                            <a href="contatos_clientes_view.php?id=<?php echo $id; ?>&excluir=<?php echo $row['item_codigo']; ?>&contato=<?php echo $row['codigo']; ?>">
+                              <button class="btn btn-danger">Excluir</button>
                             </a>
                           </td>
                         </tr>
                         <?php } }else { ?>
                         <tr>
-                          <td colspan="4">Nenhum cliente cadastrado!</td>
+                          <td colspan="4">Nenhuma contato cadastrado!</td>
                         </tr>
                       <?php } ?>
                       </tbody>

@@ -133,8 +133,8 @@
       $status = "1";
     }
 
-		$sql = "INSERT INTO Usuario (nome, telefone, email, login, senha, status, empresa)
-						VALUES ('{$nome}', '{$telefone}', '{$email}', '{$login}', '{$senha}', '{$status}', '{$_SESSION["empresa"]}')";
+		$sql = "INSERT INTO Usuario (nome, telefone, email, login, senha, responsavel, status, empresa)
+						VALUES ('{$nome}', '{$telefone}', '{$email}', '{$login}', '{$senha}', '{$responsavel}', '{$status}', '{$_SESSION["empresa"]}')";
     $sucesso = mysqli_query($conn, $sql);
 
     $consulta = "SELECT * FROM Usuario ORDER BY codigo DESC LIMIT 1";
@@ -174,6 +174,35 @@
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="assets/demo/demo.css" rel="stylesheet" />
 </head>
+
+<script type="text/javascript">
+  /* M�scaras ER */
+  function mascara(o,f){
+      v_obj=o
+      v_fun=f
+      setTimeout("execmascara()",1)
+  }
+  function execmascara(){
+      v_obj.value=v_fun(v_obj.value)
+  }
+  //Mascara para Telefone
+  function mtel(v){
+      v=v.replace(/\D/g,"");             //Remove tudo o que n�o � d�gito
+      v=v.replace(/^(\d{2})(\d)/g,"($1) $2"); //Coloca par�nteses em volta dos dois primeiros d�gitos
+      v=v.replace(/(\d)(\d{4})$/,"$1-$2");    //Coloca h�fen entre o quarto e o quinto d�gitos
+      return v;
+  }
+  //Mascara para Celular
+  function mcel(v){
+      v=v.replace(/\D/g,"");             //Remove tudo o que n�o � d�gito
+      v=v.replace(/^(\d{2})(\d)/g,"($1) $2"); //Coloca par�nteses em volta dos dois primeiros d�gitos
+      v=v.replace(/(\d)(\d{4})$/,"$1-$2");    //Coloca h�fen entre o quinto e o sexto d�gitos
+      return v;
+  }
+  function id( el ){
+      return document.getElementById( el );
+  }
+</script>
 
 <body class="">
   <div class="wrapper ">
@@ -235,7 +264,7 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="bmd-label-floating">Telefone</label>
-                          <input type="text" name="telefone" value="<?php echo ($id>0) ? $row['telefone'] : "" ?>" class="form-control">
+                          <input type="text" name="telefone" value="<?php echo ($id>0) ? $row['telefone'] : "" ?>" class="form-control" onkeyup="mascara(this, mcel)" maxlength="15">
                         </div>
                       </div>
                     </div>
@@ -243,7 +272,7 @@
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="bmd-label-floating">Email</label>
-                          <input type="text" name="email" value="<?php echo ($id>0) ? $row['email'] : "" ?>" class="form-control">
+                          <input type="email" name="email" value="<?php echo ($id>0) ? $row['email'] : "" ?>" class="form-control">
                         </div>
                       </div>
                     </div>

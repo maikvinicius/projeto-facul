@@ -75,7 +75,7 @@ header .btn, .btn.btn-default{
             <span class="navbar-toggler-icon icon-bar"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-end">
-            <form class="navbar-form">
+            <!-- <form class="navbar-form">
               <div class="input-group no-border">
                 <input type="text" value="" class="form-control" placeholder="Pesquisar...">
                 <button type="submit" class="btn btn-white btn-round btn-just-icon">
@@ -83,7 +83,7 @@ header .btn, .btn.btn-default{
                   <div class="ripple-container"></div>
                 </button>
               </div>
-            </form>
+            </form> -->
             <ul class="navbar-nav">
               <?php include 'notificacoes.php'; ?>
               <?php include 'mini_painel.php'; ?>

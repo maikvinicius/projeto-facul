@@ -1,10 +1,31 @@
 <?php
 	include 'conexao.php';
+  
+  $id = 0;
+	if(isset($_GET['id'])){
+		$id = (int) $_GET['id'];
+	} else {
+    header('Location: clientes.php');
+  }
 
-	$consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}';";
+  if(isset($_GET['excluir'])){
+    $itemEndereco = $_GET['excluir'];
+    $sql = "DELETE FROM Item_Endereco WHERE codigo='{$itemEndereco}'";
+    $sucesso = mysqli_query($conn, $sql);
+
+    $endereco = $_GET['endereco'];
+    $sql = "DELETE FROM Endereco WHERE codigo='{$endereco}'";
+    $sucesso = mysqli_query($conn, $sql);
+
+    header('Location: enderecos_clientes_view.php?id='.$id);
+  }
+
+	$consulta = "SELECT E.*, IE.codigo as item_codigo FROM Item_Endereco AS IE
+              INNER JOIN Endereco AS E ON (E.codigo = IE.FK_Endereco_codigo)
+              WHERE IE.FK_Cliente_codigo = '{$id}';";
   $result = mysqli_query($conn, $consulta);
 
-  havePermission($conn, 'cliente', 'cliente_visualizar');
+  havePermission($conn, 'cliente', 'cliente_editar');
 
 ?>
 <!DOCTYPE html>
@@ -45,7 +66,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Clientes</a>
+            <a class="navbar-brand" href="#pablo">Endereços</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -65,7 +86,7 @@
             </form> -->
             <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="cliente.php">
+                <a class="nav-link" href="cliente_add_endereco.php?id=<?php echo $id; ?>">
                   <i class="material-icons">add</i>
                   <p class="d-lg-none d-md-block">
                     Novo
@@ -85,17 +106,20 @@
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <h4 class="card-title ">Clientes</h4>
-                  <p class="card-category"> Toda sua carteira de clientes</p>
+                  <h4 class="card-title ">Endereços</h4>
+                  <p class="card-category">Endereços vinculados ao cliente</p>
                 </div>
                 <div class="card-body">
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-                        <th>Nome</th>
-                        <th>CNPJ</th>
-                        <th>Responsável</th>
-                        <th>Status</th>
+                        <th>Endereço</th>
+                        <th>Numero</th>
+                        <th>Complemento</th>
+                        <th>Bairro</th>
+                        <th>Cidade</th>
+                        <th>UF</th>
+                        <th>CEP</th>
                         <th>Ação</th>
                       </thead>
                       <tbody>
@@ -104,28 +128,22 @@
                           while($row = mysqli_fetch_assoc($result)) {
                       ?>
                         <tr>
-                          <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo $row['cnpj']; ?></td>
-                          <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo ($row['status'])? "Ativo" : "Desativado"; ?></td>
-                          <td class="text-primary" style="display:grid;grid-template-columns:1fr 1fr;">
-                            <a href="cliente.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Editar</button>
-                            </a>
-                            <a href="categorias_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Categorias</button>
-                            </a>
-                            <a href="enderecos_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Endereços</button>
-                            </a>
-                            <a href="contatos_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Contatos</button>
+                          <td><?php echo $row['rua']; ?></td>
+                          <td><?php echo $row['numero']; ?></td>
+                          <td><?php echo $row['complemento']; ?></td>
+                          <td><?php echo $row['bairro']; ?></td>
+                          <td><?php echo $row['cidade']; ?></td>
+                          <td><?php echo $row['uf']; ?></td>
+                          <td><?php echo $row['cep']; ?></td>
+                          <td class="text-primary">
+                            <a href="enderecos_clientes_view.php?id=<?php echo $id; ?>&excluir=<?php echo $row['item_codigo']; ?>&endereco=<?php echo $row['codigo']; ?>">
+                              <button class="btn btn-danger">Excluir</button>
                             </a>
                           </td>
                         </tr>
                         <?php } }else { ?>
                         <tr>
-                          <td colspan="4">Nenhum cliente cadastrado!</td>
+                          <td colspan="4">Nenhum endereço cadastrado!</td>
                         </tr>
                       <?php } ?>
                       </tbody>
