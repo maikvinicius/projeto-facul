@@ -4,6 +4,10 @@
 	$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
   $result = mysqli_query($conn, $consulta);
 
+  $consulta = "SELECT * FROM Permissao WHERE FK_Usuario_codigo ='{$_SESSION["codigo"]}';";
+  $result = mysqli_query($conn, $consulta);
+  $rowPermissao = mysqli_fetch_assoc($result);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -71,6 +75,21 @@
       <div class="content">
         <div class="container-fluid">
           <div class="row">
+            <?php if(unserialize($rowPermissao['projeto'])['projeto_visualizar'] == 1){ ?>
+            <?php
+
+            $consulta = "SELECT segunda.total as segunda, terca.total as terca, quarta.total as quarta, 
+                          quinta.total as quinta, sexta.total as sexta
+                        FROM 
+                          (SELECT count(codigo) as total FROM Venda WHERE DAYOFWEEK(data_final) = 2 AND empresa = '{$_SESSION["empresa"]}') as segunda,
+                          (SELECT count(codigo) as total FROM Venda WHERE DAYOFWEEK(data_final) = 3 AND empresa = '{$_SESSION["empresa"]}') as terca,
+                          (SELECT count(codigo) as total FROM Venda WHERE DAYOFWEEK(data_final) = 4 AND empresa = '{$_SESSION["empresa"]}') as quarta,
+                          (SELECT count(codigo) as total FROM Venda WHERE DAYOFWEEK(data_final) = 5 AND empresa = '{$_SESSION["empresa"]}') as quinta,
+                          (SELECT count(codigo) as total FROM Venda WHERE DAYOFWEEK(data_final) = 6 AND empresa = '{$_SESSION["empresa"]}') as sexta;";
+                $result = mysqli_query($conn, $consulta);
+                $row = mysqli_fetch_assoc($result);
+            ?>
+
             <div class="col-md-6">
               <div class="card card-chart">
                 <div class="card-header card-header-success">
@@ -79,7 +98,10 @@
                   new Chartist.Line('#dailySalesChart', {
                     labels: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'],
                     series: [
-                      [1, 2, 3, 4, 3]
+                      [
+                        <?php echo $row['segunda']; ?>, <?php echo $row['terca']; ?>, <?php echo $row['quarta']; ?>,
+                        <?php echo $row['quinta']; ?>, <?php echo $row['sexta']; ?>
+                      ]
                     ]
                   }, {
                     fullWidth: true,
@@ -94,6 +116,30 @@
                 </div>
               </div>
             </div>
+            <?php } ?>
+            <?php if(unserialize($rowPermissao['projeto'])['projeto_visualizar'] == 1){ ?>
+            <?php
+
+                $consulta = "SELECT sum(valor) as janeiro, fevereiro.total as fevereiro, marco.total as marco, abril.total as abril, maio.total as maio, junho.total as junho,
+                julho.total as julho, agosto.total as agosto, setembro.total as setembro, outubro.total as outubro, novembro.total as novembro, dezembro.total as dezembro
+                FROM Venda as V, 
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '2' AND MONTH(data_final) = '2' AND empresa = '{$_SESSION["empresa"]}') as fevereiro,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '3' AND MONTH(data_final) = '3' AND empresa = '{$_SESSION["empresa"]}') as marco,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '4' AND MONTH(data_final) = '4' AND empresa = '{$_SESSION["empresa"]}') as abril,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '5' AND MONTH(data_final) = '5' AND empresa = '{$_SESSION["empresa"]}') as maio,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '6' AND MONTH(data_final) = '6' AND empresa = '{$_SESSION["empresa"]}') as junho,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '7' AND MONTH(data_final) = '7' AND empresa = '{$_SESSION["empresa"]}') as julho,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '8' AND MONTH(data_final) = '8' AND empresa = '{$_SESSION["empresa"]}') as agosto,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '9' AND MONTH(data_final) = '9' AND empresa = '{$_SESSION["empresa"]}') as setembro,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '10' AND MONTH(data_final) = '10' AND empresa = '{$_SESSION["empresa"]}') as outubro,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '11' AND MONTH(data_final) = '11' AND empresa = '{$_SESSION["empresa"]}') as novembro,
+                (SELECT sum(valor) as total FROM Venda WHERE MONTH(data_inicial) = '12' AND MONTH(data_final) = '12' AND empresa = '{$_SESSION["empresa"]}') as dezembro
+                WHERE MONTH(V.data_inicial) = '1' AND MONTH(V.data_final) = '1' AND V.empresa = '{$_SESSION["empresa"]}';";
+                $result = mysqli_query($conn, $consulta);
+                $row = mysqli_fetch_assoc($result);
+
+            ?>
+
             <div class="col-md-6">
               <div class="card card-chart">
                 <div class="card-header card-header-warning">
@@ -102,7 +148,11 @@
                   new Chartist.Bar('#websiteViewsChart', {
                   labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
                   series: [
-                    [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
+                    [
+                      <?php echo $row['janeiro']; ?>, <?php echo $row['fevereiro']; ?>,<?php echo $row['marco']; ?>,<?php echo $row['abril']; ?>,
+                      <?php echo $row['maio']; ?>, <?php echo $row['junho']; ?>, <?php echo $row['julho']; ?>, <?php echo $row['agosto']; ?>,
+                      <?php echo $row['setembro']; ?>, <?php echo $row['outubro']; ?>, <?php echo $row['novembro']; ?>, <?php echo $row['dezembro']; ?>
+                    ]
                   ]
                 }, {
                   stackBars: true,
@@ -126,6 +176,8 @@
               </div>
             </div>
           </div>
+          <?php } ?>
+          <?php if(unserialize($rowPermissao['projeto'])['projeto_visualizar'] == 1){ ?>
           <div class="row">
             <div class="col-lg-12 col-md-12">
               <div class="card">
@@ -164,6 +216,7 @@
                 </div>
               </div>
             </div>
+          <?php } ?>
           </div>
         </div>
       </div>

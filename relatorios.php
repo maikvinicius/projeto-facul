@@ -264,6 +264,17 @@
                       </div>
                       </a>
 
+                      <a href="relatorio_projeto_mensais.php">
+                      <div class="box-relatorio">
+                        <div class="icon">
+                          <i class="material-icons">contact_mail</i>
+                        </div>
+                        <div class="title">
+                          Vendas mensais
+                        </div>
+                      </div>
+                      </a>
+
                     </div>
 
                 </div>
