@@ -421,7 +421,7 @@
                               <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_cadastrar']) ? "checked" : "" ?> name="projeto_cadastrar" value="1"> Cadastrar</label>
                             </div>
                             <div class="checkbox">
-                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_editar']) ? "checked" : "" ?> name="projeto_editar" value="1"> Editar</label>
+                              <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_editar']) ? "checked" : "" ?> name="projeto_editar" value="1"> Detalhes</label>
                             </div>
                             <!-- <div class="checkbox">
                               <label><input type="checkbox" <?php echo ($id>0 && unserialize($rowPermissao['projeto'])['projeto_desativar']) ? "checked" : "" ?> name="projeto_desativar" value="1"> Desativar</label>

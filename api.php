@@ -50,6 +50,20 @@ if($post->local == "nova_etapa") {
                 VALUES ('{$descricao}', '{$usuario}', '{$etapaNova['codigo']}', '{$post->venda}', '{$_SESSION["empresa"]}')";
         $sucesso = mysqli_query($conn, $sql);
 
+        if($etapaNova['ultima']==1){
+          $sql = "UPDATE Venda SET status = '0'
+                WHERE empresa = '{$_SESSION["empresa"]}' AND codigo = '{$post->venda}';";
+          $sucesso = mysqli_query($conn, $sql);
+
+          $consulta = "SELECT * FROM Item_Etapa WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC LIMIT 1;";
+          $resultEtapa = mysqli_query($conn, $consulta);
+          $ultima = mysqli_fetch_assoc($resultEtapa);
+
+          $sql = "UPDATE Item_Etapa SET data_final = '{$dataFinal}'
+                WHERE empresa = '{$_SESSION["empresa"]}' AND codigo = '{$ultima["codigo"]}';";
+          $sucesso = mysqli_query($conn, $sql);
+        }
+
       } else {
         $sql = "INSERT INTO Item_Etapa (descricao, FK_Usuario_Codigo, FK_Etapa_Codigo, FK_Venda_Codigo, empresa)
                 VALUES ('{$descricao}', '{$usuario}', '{$etapa['codigo']}', '{$post->venda}', '{$_SESSION["empresa"]}')";

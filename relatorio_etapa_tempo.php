@@ -1,10 +1,38 @@
 <?php
-	include 'conexao.php';
-
-	$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
+  include 'conexao.php';
+  
+  $consulta = "SELECT * FROM Etapa WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY ordem;";
   $result = mysqli_query($conn, $consulta);
 
-  havePermission($conn, 'projeto', 'projeto_visualizar');
+  if(!isset($_GET['tempo'])){
+    header('Location: relatorios.php');
+  }
+
+  $tempo = $_GET['tempo'];
+
+  $tabela = array();
+  $itens = array();
+  $itensValores = array();
+
+  if (mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
+      
+      $consulta = "SELECT AVG(TIMESTAMPDIFF({$tempo}, data_inicial, data_final)) as diferenca
+                    FROM Item_Etapa
+                    WHERE FK_Etapa_Codigo = '{$row["codigo"]}';";
+      $resultConsulta = mysqli_query($conn, $consulta);
+      $rowConsulta = mysqli_fetch_assoc($resultConsulta);
+
+      array_push($tabela, array(
+        etapa => $row['nome'],
+        media => ($rowConsulta['diferenca']) ? $rowConsulta['diferenca'] : 0
+      ));
+
+      array_push($itens, $row['nome']);
+      array_push($itensValores, ($rowConsulta['diferenca']) ? $rowConsulta['diferenca'] : 0);
+
+    }
+  }
 
 ?>
 <!DOCTYPE html>
@@ -26,6 +54,9 @@
   <link href="assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="assets/demo/demo.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/js/chart/Chart.min.css">
+  <script src="assets/js/chart/Chart.bundle.min.js"></script>
+  <script src="assets/js/chart/Chart.min.js"></script>
 </head>
 
 <body class="">
@@ -45,7 +76,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Projetos</a>
+            <a class="navbar-brand" href="#pablo">Relatórios</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -54,24 +85,8 @@
             <span class="navbar-toggler-icon icon-bar"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-end">
-            <!-- <form class="navbar-form">
-              <div class="input-group no-border">
-                <input type="text" value="" class="form-control" placeholder="Pesquisar...">
-                <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                  <i class="material-icons">search</i>
-                  <div class="ripple-container"></div>
-                </button>
-              </div>
-            </form> -->
             <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="venda.php">
-                  <i class="material-icons">add</i>
-                  <p class="d-lg-none d-md-block">
-                    Novo
-                  </p>
-                </a>
-              </li>
               <?php include 'notificacoes.php'; ?>
               <?php include 'mini_painel.php'; ?>
             </ul>
@@ -84,67 +99,79 @@
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header card-header-primary">
-                  <h4 class="card-title ">Projetos</h4>
-                  <p class="card-category"> Todos os seus projetos</p>
+                <div class="card-header card-header-primary" style="display:flex;justify-content: space-between;">
+                  <div>
+                    <h4 class="card-title ">Relatórios</h4>
+                      <p class="card-category"> Todos os seus relatórios</p>
+                  </div>
+                  <style>
+                  .box-imprimir{
+                    display:flex;flex-direction:column;align-items:center;margin-right: 10px;
+                  }
+                  .box-imprimir:hover{
+                    cursor: pointer;
+                    opacity: 0.5;
+                  }
+                  </style>
+                    <div class="box-imprimir" onclick="javascript:window.print();">
+                      <i class="material-icons">print</i>
+                      Imprimir
+                    </div>
                 </div>
                 <div class="card-body">
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead class=" text-primary">
-                        <th>Codigo</th>
-                        <th>Cliente</th>
-                        <th>Início</th>
-                        <th>Final</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Ação</th>
-                      </thead>
-                      <tbody>
+                  
+                <canvas id="myChart" width="100%" height="50"></canvas>
+                <script>
+                var ctx = document.getElementById('myChart');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: <?php echo json_encode($itens); ?>,
+                        datasets: [{
+                            label: '# Média de tempo',
+                            data: <?php echo json_encode($itensValores); ?>,
+                            backgroundColor: 'rgba(0, 181, 204, 0.2)',
+                            borderColor: 'rgba(0, 181, 204, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+                </script>
+
+                <div class="col-md-12">
+
+                <table class="table">
+                  <thead>
+                    <th>Etapa</th>
+                    <th>Tempo médio</th>
+                  </thead>
+                  <tbody>
                       <?php
-                      if (mysqli_num_rows($result) > 0) {
-                          while($row = mysqli_fetch_assoc($result)) {
+                        foreach($tabela AS $objeto){
                       ?>
                         <tr>
-                          <td><?php echo $row['codigo']; ?></td>
-                          <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo date('d/m/Y', strtotime($row['data_inicial'])); ?></td>
-                          <td><?php echo date('d/m/Y', strtotime($row['data_final'])); ?></td>
-                          <td><?php echo "R$ ".number_format($row['valor'], 2, ',', '.'); ?></td>
-                          <td><?php echo ($row['status'])? "Ativo" : "Finalizado"; ?></td>
-                          <td class="text-primary">
-                            <a href="venda.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary">Visualizar</button>
-                            </a>
-                             <!-- <button class="btn btn-danger">Desativar</button> -->
-                          </td>
+                          <td><?php echo $objeto['etapa']; ?></td>
+                          <td><?php echo number_format((float)$objeto['media'], 2, '.', ''); ?></td>
                         </tr>
-                        <?php } }else { ?>
-                        <tr>
-                          <td colspan="4">Nenhum projeto cadastrado!</td>
-                        </tr>
-                      <?php } ?>
-                      </tbody>
-                    </table>
-                  </div>
+                      <?php }  ?>
+                  </tbody>
+                </table>
+
+                </div>
+
                 </div>
               </div>
             </div>
           </div>
-          
-            <!-- <nav aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1">Voltar</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#">Próximo</a>
-                </li>
-              </ul>
-            </nav> -->
           
         </div>
       </div>

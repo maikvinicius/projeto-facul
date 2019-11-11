@@ -1,10 +1,13 @@
 <?php
-	include 'conexao.php';
+  include 'conexao.php';
 
-	$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
+  $consulta = "SELECT V.codigo as projeto, U.nome as usuario, E.nome as etapa, V.data_final as prazo, IE.data_final
+  FROM (SELECT * FROM Etapa WHERE ultima='1' AND empresa = '{$_SESSION["empresa"]}') AS etapa, Venda AS V
+  INNER JOIN Item_Etapa AS IE ON (IE.FK_Venda_codigo = V.codigo)
+  INNER JOIN Etapa AS E ON (E.codigo = IE.FK_Etapa_codigo)
+  INNER JOIN Usuario AS U ON (IE.FK_Usuario_codigo = U.codigo)
+  WHERE IE.data_final > V.data_final AND V.empresa = '{$_SESSION["empresa"]}' AND E.ordem = etapa.ordem-1;";
   $result = mysqli_query($conn, $consulta);
-
-  havePermission($conn, 'projeto', 'projeto_visualizar');
 
 ?>
 <!DOCTYPE html>
@@ -26,6 +29,9 @@
   <link href="assets/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
   <link href="assets/demo/demo.css" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/js/chart/Chart.min.css">
+  <script src="assets/js/chart/Chart.bundle.min.js"></script>
+  <script src="assets/js/chart/Chart.min.js"></script>
 </head>
 
 <body class="">
@@ -45,7 +51,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Projetos</a>
+            <a class="navbar-brand" href="#pablo">Relatórios</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -54,24 +60,8 @@
             <span class="navbar-toggler-icon icon-bar"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-end">
-            <!-- <form class="navbar-form">
-              <div class="input-group no-border">
-                <input type="text" value="" class="form-control" placeholder="Pesquisar...">
-                <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                  <i class="material-icons">search</i>
-                  <div class="ripple-container"></div>
-                </button>
-              </div>
-            </form> -->
             <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="venda.php">
-                  <i class="material-icons">add</i>
-                  <p class="d-lg-none d-md-block">
-                    Novo
-                  </p>
-                </a>
-              </li>
               <?php include 'notificacoes.php'; ?>
               <?php include 'mini_painel.php'; ?>
             </ul>
@@ -84,67 +74,65 @@
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header card-header-primary">
-                  <h4 class="card-title ">Projetos</h4>
-                  <p class="card-category"> Todos os seus projetos</p>
+                <div class="card-header card-header-primary" style="display:flex;justify-content: space-between;">
+                  <div>
+                    <h4 class="card-title ">Relatórios</h4>
+                      <p class="card-category"> Todos os seus relatórios</p>
+                  </div>
+                  <style>
+                  .box-imprimir{
+                    display:flex;flex-direction:column;align-items:center;margin-right: 10px;
+                  }
+                  .box-imprimir:hover{
+                    cursor: pointer;
+                    opacity: 0.5;
+                  }
+                  </style>
+                    <div class="box-imprimir" onclick="javascript:window.print();">
+                      <i class="material-icons">print</i>
+                      Imprimir
+                    </div>
                 </div>
                 <div class="card-body">
-                  <div class="table-responsive">
+
+                  <div class="col-md-12">
+
                     <table class="table">
-                      <thead class=" text-primary">
-                        <th>Codigo</th>
-                        <th>Cliente</th>
-                        <th>Início</th>
-                        <th>Final</th>
-                        <th>Total</th>
-                        <th>Status</th>
+                      <thead>
+                        <th>Projeto</th>
+                        <th>Usuário</th>
+                        <th>Etapa</th>
+                        <th>Prazo</th>
+                        <th>Finalização</th>
                         <th>Ação</th>
                       </thead>
                       <tbody>
-                      <?php
-                      if (mysqli_num_rows($result) > 0) {
-                          while($row = mysqli_fetch_assoc($result)) {
-                      ?>
-                        <tr>
-                          <td><?php echo $row['codigo']; ?></td>
-                          <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo date('d/m/Y', strtotime($row['data_inicial'])); ?></td>
-                          <td><?php echo date('d/m/Y', strtotime($row['data_final'])); ?></td>
-                          <td><?php echo "R$ ".number_format($row['valor'], 2, ',', '.'); ?></td>
-                          <td><?php echo ($row['status'])? "Ativo" : "Finalizado"; ?></td>
-                          <td class="text-primary">
-                            <a href="venda.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary">Visualizar</button>
-                            </a>
-                             <!-- <button class="btn btn-danger">Desativar</button> -->
-                          </td>
-                        </tr>
-                        <?php } }else { ?>
-                        <tr>
-                          <td colspan="4">Nenhum projeto cadastrado!</td>
-                        </tr>
-                      <?php } ?>
+                          <?php
+                            if (mysqli_num_rows($result) > 0) {
+                              while($row = mysqli_fetch_assoc($result)) {
+                          ?>
+                            <tr>
+                              <td><?php echo $row['projeto']; ?></td>
+                              <td><?php echo $row['usuario']; ?></td>
+                              <td><?php echo $row['etapa']; ?></td>
+                              <td><?php echo date("d/m/Y", strtotime($row['prazo'])); ?></td>
+                              <td><?php echo date("d/m/Y", strtotime($row['data_final'])); ?></td>
+                              <td>
+                                <a href="venda.php?id=<?php echo $row['projeto']; ?>">
+                                  <button class="btn btn-primary">Visualizar</button>
+                                </a>
+                              </td>
+                            </tr>
+                          <?php }}  ?>
                       </tbody>
                     </table>
+
                   </div>
+
                 </div>
               </div>
             </div>
           </div>
-          
-            <!-- <nav aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1">Voltar</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#">Próximo</a>
-                </li>
-              </ul>
-            </nav> -->
           
         </div>
       </div>

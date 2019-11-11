@@ -1,8 +1,15 @@
 <?php
-	include 'conexao.php';
+  include 'conexao.php';
 
-	$consulta = "SELECT * FROM Venda WHERE empresa = '{$_SESSION["empresa"]}' ORDER BY codigo DESC;";
-  $result = mysqli_query($conn, $consulta);
+  if(isset($_GET['inicio'])){
+    $inicio = addslashes($_GET['inicio']);
+    $fim = addslashes($_GET['fim']);
+    $consulta = "SELECT *
+    FROM Venda
+    WHERE data_inicial >= '{$inicio}' AND data_final <= '{$fim}' AND empresa = '{$_SESSION["empresa"]}'
+    ORDER BY codigo DESC;";
+    $result = mysqli_query($conn, $consulta);
+  }
 
 ?>
 <!DOCTYPE html>
@@ -83,80 +90,78 @@
                     opacity: 0.5;
                   }
                   </style>
-                    <div class="box-imprimir">
+                    <div class="box-imprimir" onclick="javascript:window.print();">
                       <i class="material-icons">print</i>
                       Imprimir
                     </div>
                 </div>
                 <div class="card-body">
 
-                <?php if($_GET['relatorio'] == "barra"){ ?>
-                  
-                <canvas id="myChart" width="100%" height="50"></canvas>
-                <script>
-                var ctx = document.getElementById('myChart');
-                var myChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                        datasets: [{
-                            label: '# Título',
-                            data: [12, 19, 3, 5, 2, 3],
-                            backgroundColor: [
-                              'rgba(0, 181, 204, 0.2)'
-                            ],
-                            borderColor: [
-                              'rgba(0, 181, 204, 1)',
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-                </script>
+                <form action="#" method="get">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="from-group">
+                        <label for="">Data inicial</label>
+                        <input type="date" name="inicio" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="from-group">
+                        <label for="">Data final</label>
+                        <input type="date" name="fim" class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="from-group" align="center">
+                        <br>
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
 
-              <?php } else if($_GET['relatorio'] == "linha"){ ?>
+                <hr>
 
-                <canvas id="myChart" width="100%" height="50"></canvas>
-                <script>
-                var ctx = document.getElementById('myChart');
-                var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                        datasets: [{
-                            label: '# of Votes',
-                            data: [12, 19, 3, 5, 2, 3],
-                            backgroundColor: [
-                                'rgba(0, 181, 204, 0.2)',
-                            ],
-                            borderColor: [
-                              'rgba(0, 181, 204, 1)',
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-                </script>
+                  <div class="col-md-12">
 
-                <?php }?>
+                    <table class="table">
+                    <thead class=" text-primary">
+                        <th>Codigo</th>
+                        <th>Cliente</th>
+                        <th>Início</th>
+                        <th>Final</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                      </thead>
+                      <tbody>
+                      <?php
+                      if (mysqli_num_rows($result) > 0) {
+                          while($row = mysqli_fetch_assoc($result)) {
+                      ?>
+                        <tr>
+                          <td><?php echo $row['codigo']; ?></td>
+                          <td><?php echo $row['nome']; ?></td>
+                          <td><?php echo date('d/m/Y', strtotime($row['data_inicial'])); ?></td>
+                          <td><?php echo date('d/m/Y', strtotime($row['data_final'])); ?></td>
+                          <td><?php echo "R$ ".number_format($row['valor'], 2, ',', '.'); ?></td>
+                          <td><?php echo ($row['status'])? "Ativo" : "Finalizado"; ?></td>
+                          <td class="text-primary">
+                            <a href="venda.php?id=<?php echo $row['codigo']; ?>">
+                              <button class="btn btn-primary">Visualizar</button>
+                            </a>
+                             <!-- <button class="btn btn-danger">Desativar</button> -->
+                          </td>
+                        </tr>
+                        <?php } }else { ?>
+                        <tr>
+                          <td colspan="4">Nenhum projeto cadastrado!</td>
+                        </tr>
+                      <?php } ?>
+                      </tbody>
+                    </table>
+
+                  </div>
 
                 </div>
               </div>

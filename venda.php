@@ -81,7 +81,7 @@
                         FROM Venda as V
                         INNER JOIN Cliente AS C ON (C.codigo = V.FK_Cliente_Codigo)
                         INNER JOIN Usuario AS U ON (V.FK_Usuario_codigo = U.codigo)
-                        WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.codigo = '{$id}' AND V.status = 1;";
+                        WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.codigo = '{$id}';";
     $result = mysqli_query($conn, $consulta);
     $row = mysqli_fetch_assoc($result);
 
@@ -254,18 +254,19 @@
                           <table class="table">
                             <thead>
                               <th>Etapa</th>
-                              <th>Data</th>
+                              <th>Início</th>
+                              <th>Fim</th>
                               <th>Usuário</th>
                               <th>Descrição</th>
                             </thead>
                             <tbody>
                               <?php
-                                  $consulta = "SELECT IE.descricao, E.nome AS etapa, IE.data_inicial, U.nome AS usuario 
+                                  $consulta = "SELECT IE.descricao, E.nome AS etapa, IE.data_inicial, IE.data_final, U.nome AS usuario 
                                   FROM Venda AS V
                                   INNER JOIN Item_Etapa as IE ON (IE.FK_Venda_codigo = V.codigo)
                                   INNER JOIN Etapa AS E ON (E.codigo = IE.FK_Etapa_Codigo)
                                   INNER JOIN Usuario AS U ON (U.codigo = IE.FK_Usuario_Codigo)
-                                  WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.codigo= '{$row['CodigoVenda']}';";
+                                  WHERE V.empresa = '{$_SESSION["empresa"]}' AND V.codigo= '{$row['CodigoVenda']}' ORDER BY E.ordem;";
                                   $resultProdutos = mysqli_query($conn, $consulta);
                                   if (mysqli_num_rows($resultProdutos) > 0) {
                                   while($rowProdutos = mysqli_fetch_assoc($resultProdutos)) { 
@@ -273,6 +274,7 @@
                                     <tr>
                                       <td><?php echo $rowProdutos['etapa']; ?></td>
                                       <td><?php echo date("d/m/Y H:i", strtotime($rowProdutos['data_inicial'])); ?></td>
+                                      <td><?php echo ($rowProdutos['data_final']) ? date("d/m/Y H:i", strtotime($rowProdutos['data_final'])) : ' - '; ?></td>
                                       <td><?php echo $rowProdutos['usuario']; ?></td>
                                       <td>
                                       <div style="width:100%;max-width:500px;max-height:300px;overflow:auto;">

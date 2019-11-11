@@ -121,68 +121,145 @@
 
                     <div class="box-relatorios">
 
-                    <a href="relatorio.php?relatorio=barra">
+                    <a href="relatorio_etapa_tempo.php?tempo=HOUR">
                         <div class="box-relatorio">
                             <div class="icon">
-                                <i class="material-icons">filter_list</i>
+                                <i class="material-icons">alarm_on</i>
                               </div>
                               <div class="title">
-                                Ticket médio
+                                Média de tempo para finalizar etapa <br><b>Horas</b>
                               </div>
                           </div>
                     </a>
 
-                    <a href="relatorio.php?relatorio=linha">
+                    <a href="relatorio_etapa_tempo.php?tempo=DAY">
                         <div class="box-relatorio">
-                        <div class="icon">
-                            <i class="material-icons">category</i>
+                            <div class="icon">
+                                <i class="material-icons">alarm_on</i>
+                              </div>
+                              <div class="title">
+                                Média de tempo para finalizar etapa <br><b>Dias</b>
+                              </div>
                           </div>
-                          <div class="title">
-                            Categorias de Clientes
-                          </div>
-                        </div>
-                      </a>
+                    </a>
 
-                      <a href="relatorio.php?relatorio=linha">
+                    <a href="relatorio_etapa_tempo.php?tempo=MONTH">
                         <div class="box-relatorio">
-                        <div class="icon">
-                            <i class="material-icons">category</i>
+                            <div class="icon">
+                                <i class="material-icons">alarm_on</i>
+                              </div>
+                              <div class="title">
+                                Média de tempo para finalizar etapa <br><b>Meses</b>
+                              </div>
                           </div>
-                          <div class="title">
-                            Categorias de produtos
-                          </div>
-                        </div>
-                      </a>
+                    </a>
 
-                      <a href="relatorio.php?relatorio=linha">
+                    <a href="relatorio_ticket.php?ticket=projetos">
                         <div class="box-relatorio">
-                        <div class="icon">
-                            <i class="material-icons">card_giftcard</i>
+                            <div class="icon">
+                                <i class="material-icons">work</i>
+                              </div>
+                              <div class="title">
+                                Ticket médio <br><b>Projetos</b>
+                              </div>
                           </div>
-                          <div class="title">
-                            Produtos
-                          </div>
-                        </div>
-                      </a>
+                    </a>
 
-                      <a href="relatorio.php?relatorio=linha">
+                    <a href="relatorio_ticket.php?ticket=clientes">
+                        <div class="box-relatorio">
+                            <div class="icon">
+                                <i class="material-icons">contact_mail</i>
+                              </div>
+                              <div class="title">
+                                Ticket médio <br><b>Clientes</b>
+                              </div>
+                          </div>
+                    </a>
+
+                    <a href="relatorio_etapa_passada.php">
+                        <div class="box-relatorio">
+                            <div class="icon">
+                                <i class="material-icons">alarm_on</i>
+                              </div>
+                              <div class="title">
+                                Etapas finalizadas p/ Usuário
+                              </div>
+                          </div>
+                    </a>
+
+                    <a href="relatorio_projeto_atrasado.php">
                         <div class="box-relatorio">
                         <div class="icon">
                             <i class="material-icons">work</i>
                           </div>
                           <div class="title">
-                            Projetos
+                            Projetos finalizados atrasados
                           </div>
                         </div>
                       </a>
 
-                      <a href="relatorio.php?relatorio=linha">
+                      <a href="relatorio_projeto_atrasado_usuario.php">
+                        <div class="box-relatorio">
+                        <div class="icon">
+                            <i class="material-icons">work</i>
+                          </div>
+                          <div class="title">
+                            Último usuario antes de<br> finalizar atrasado
+                          </div>
+                        </div>
+                      </a>
+
+                    <a href="relatorio_projeto_categoria_cliente.php">
+                        <div class="box-relatorio">
+                        <div class="icon">
+                            <i class="material-icons">category</i>
+                          </div>
+                          <div class="title">
+                            Quantidade de vendas por<br> categoria de clientes
+                          </div>
+                        </div>
+                      </a>
+
+                      <a href="relatorio_projeto_categoria_produto.php">
+                        <div class="box-relatorio">
+                        <div class="icon">
+                            <i class="material-icons">category</i>
+                          </div>
+                          <div class="title">
+                            Quantidade de vendas por<br> categoria de produtos
+                          </div>
+                        </div>
+                      </a>
+
+                      <a href="relatorio_projeto_produto.php">
+                        <div class="box-relatorio">
+                        <div class="icon">
+                            <i class="material-icons">card_giftcard</i>
+                          </div>
+                          <div class="title">
+                            Quantidade de vendas por<br> produto
+                          </div>
+                        </div>
+                      </a>
+
+                      <a href="relatorio_projeto_data.php">
+                        <div class="box-relatorio">
+                        <div class="icon">
+                            <i class="material-icons">work</i>
+                          </div>
+                          <div class="title">
+                            Projetos entre datas
+                          </div>
+                        </div>
+                      </a>
+
+                      <a href="relatorio_projeto_cliente.php">
                       <div class="box-relatorio">
                         <div class="icon">
                           <i class="material-icons">contact_mail</i>
                         </div>
                         <div class="title">
-                          Clientes
+                          Vendas por clientes
                         </div>
                       </div>
                       </a>
