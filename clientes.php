@@ -45,7 +45,8 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Clientes</a>
+          <a class="navbar-brand" href="video.php?video=clientes">Ajuda cadastro/editar</a>
+            <a class="navbar-brand" href="video.php?video=importar_csv_clientes">Ajuda CSV</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>

@@ -67,6 +67,7 @@ header .btn, .btn.btn-default{
             <div onclick="menu();">
             <img id="image-menu" src="assets/img/menu.png" width="32px" height="32px">
             </div>
+            <a class="navbar-brand" href="video.php?video=cronograma">Ajuda cronograma</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>

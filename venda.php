@@ -173,10 +173,12 @@
                     opacity: 0.5;
                   }
                   </style>
+                  <?php if($id>0){ ?>
                     <div class="box-imprimir" onclick="javascript:window.print();">
                       <i class="material-icons">print</i>
                       Imprimir
                     </div>
+                  <?php } ?>
                 </div>
                 <div class="card-body">
                   

@@ -77,7 +77,93 @@
                 </div>
                 <div class="card-body">
 
-                <iframe width="100%" height="500" src="https://www.youtube.com/embed/vO5j4LxbtxM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="row">
+
+                <?php if(isset($_GET['video'])){ ?>
+
+                <?php if($_GET['video']=='categoria_clientes'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/categoria_clientes.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='categoria_produtos'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/categoria_produtos.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='clientes'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/clientes.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='colaborador'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/colaborador.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='cronograma'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/cronograma.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='etapas'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/etapas.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='importar_csv_clientes'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/importar_csv_clientes.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='importar_csv_produtos'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/importar_csv_produtos.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='produtos'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/produtos.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php if($_GET['video']=='projetos'){ ?>
+                  <div class="col-md-12">
+                    <video width="100%" controls>
+                        <source src="videos/projetos.mov" type="video/mp4">
+                    </video>
+                  </div>
+                <?php } ?>
+
+                <?php } ?>
+
+                </div>
 
                 </div>
               </div>
