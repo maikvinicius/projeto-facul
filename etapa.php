@@ -109,7 +109,7 @@
         Tip 2: you can also add an image using data-image tag
     -->
       <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="#" class="simple-text logo-normal">
           Facilita
         </a>
       </div>
@@ -188,17 +188,17 @@
                           <label>Status</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? checked : "" ?>> Ativar</label>
+                              <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? 'checked' : "" ?>> Ativar</label>
                             </div>
                             <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como inícial, ele ficará disponível para seus clientes acessar o rastreio.">
-                              <label><input type="checkbox" name="inicial" value="1" <?php echo ($id>0 && $row['inicial'] == '1') ? checked : "" ?>> Inícial</label>
+                              <label><input type="checkbox" name="inicial" value="1" <?php echo ($id>0 && $row['inicial'] == '1') ? 'checked' : "" ?>> Inícial</label>
                             </div>
                             <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como final, ele ficará disponível para seus clientes até esta etapa no rastreio.">
-                              <label><input type="checkbox" name="final" value="1" <?php echo ($id>0 && $row['final'] == '1') ? checked : "" ?>> Final</label>
+                              <label><input type="checkbox" name="final" value="1" <?php echo ($id>0 && $row['final'] == '1') ? 'checked' : "" ?>> Final</label>
                             </div>
                             <?php if($row['ultima'] != '1') { ?>
                             <div class="checkbox" data-toggle="tooltip" data-placement="top" title="Ao selecionar como última, ele ficará para concluir o cronograma.">
-                              <label><input type="checkbox" name="ultima" value="1" <?php echo ($id>0 && $row['ultima'] == '1') ? checked : "" ?>> Última</label>
+                              <label><input type="checkbox" name="ultima" value="1" <?php echo ($id>0 && $row['ultima'] == '1') ? 'checked' : "" ?>> Última</label>
                             </div>
                             <?php } ?>
                           </div>

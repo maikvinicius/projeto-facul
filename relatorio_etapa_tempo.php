@@ -24,8 +24,8 @@
       $rowConsulta = mysqli_fetch_assoc($resultConsulta);
 
       array_push($tabela, array(
-        etapa => $row['nome'],
-        media => ($rowConsulta['diferenca']) ? $rowConsulta['diferenca'] : 0
+        'etapa' => $row['nome'],
+        'media' => ($rowConsulta['diferenca']) ? $rowConsulta['diferenca'] : 0
       ));
 
       array_push($itens, $row['nome']);

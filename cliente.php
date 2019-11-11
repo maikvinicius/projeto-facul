@@ -100,7 +100,7 @@
         Tip 2: you can also add an image using data-image tag
     -->
       <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="#" class="simple-text logo-normal">
           Facilita
         </a>
       </div>
@@ -161,11 +161,11 @@
                         <div class="form-group">
                           <label class="bmd-label-floating">Captacao</label>
                           <select name="captacao" class="form-control">
-                          <option value="1" <?php echo ($row['captacao'] == 1) ? "selected" : "" ?>>Redes Sociais</option>
-                          <option value="2" <?php echo ($row['captacao'] == 2) ? "selected" : "" ?>>E-mail</option>
-                          <option value="3" <?php echo ($row['captacao'] == 3) ? "selected" : "" ?>>Site</option>
-                          <option value="4" <?php echo ($row['captacao'] == 4) ? "selected" : "" ?>>Indicação</option>
-                          <option value="5" <?php echo ($row['captacao'] == 5) ? "selected" : "" ?>>Orgânico</option>
+                          <option value="1" <?php echo ($id > 0 && $row['FK_Captacao_codigo'] == 1) ? "selected" : "" ?>>Redes Sociais</option>
+                          <option value="2" <?php echo ($id > 0 && $row['FK_Captacao_codigo'] == 2) ? "selected" : "" ?>>E-mail</option>
+                          <option value="3" <?php echo ($id > 0 && $row['FK_Captacao_codigo'] == 3) ? "selected" : "" ?>>Site</option>
+                          <option value="4" <?php echo ($id > 0 && $row['FK_Captacao_codigo'] == 4) ? "selected" : "" ?>>Indicação</option>
+                          <option value="5" <?php echo ($id > 0 && $row['FK_Captacao_codigo'] == 5) ? "selected" : "" ?>>Orgânico</option>
                           </select>
                         </div>
                       </div>
@@ -177,7 +177,7 @@
                           <label>Status</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? checked : "" ?>> Ativar</label>
+                              <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? 'checked' : "" ?>> Ativar</label>
                             </div>
                           </div>
                         </div>

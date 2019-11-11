@@ -1,6 +1,8 @@
 <?php
   include 'conexao.php';
 
+  $result = null;
+
   if(isset($_GET['inicio'])){
     $inicio = addslashes($_GET['inicio']);
     $fim = addslashes($_GET['fim']);
@@ -136,7 +138,7 @@
                       </thead>
                       <tbody>
                       <?php
-                      if (mysqli_num_rows($result) > 0) {
+                      if ($result && mysqli_num_rows($result) > 0) {
                           while($row = mysqli_fetch_assoc($result)) {
                       ?>
                         <tr>

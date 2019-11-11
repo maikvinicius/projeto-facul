@@ -518,6 +518,7 @@ var KanbanTest = new jKanban({
                         AND V.status = 1
                         ORDER BY V.codigo DESC;";
           $result = mysqli_query($conn, $consulta);
+          $i=0;
           if (mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_assoc($result)) {
           ?>
@@ -656,7 +657,7 @@ var KanbanTest = new jKanban({
       }
 
       function goToCard(){
-        const card = "<?php echo $_GET['card']; ?>";
+        const card = "<?php echo (isset($_GET['card'])) ? $_GET['card'] : 0; ?>";
         if(card.length > 0){          
           $('#myKanban').animate({scrollLeft:'+='+card},300);
         }        

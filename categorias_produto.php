@@ -79,7 +79,7 @@
         Tip 2: you can also add an image using data-image tag
     -->
       <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="#" class="simple-text logo-normal">
           Facilita
         </a>
       </div>
@@ -135,7 +135,7 @@
                           <label>Status</label>
                           <div class="form-group">
                           <div class="checkbox">
-                              <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? checked : "" ?>> Ativar</label>
+                              <label><input type="checkbox" name="status" value="1" <?php echo ($id>0 && $row['status'] == '1') ? 'checked' : "" ?>> Ativar</label>
                             </div>
                           </div>
                         </div>

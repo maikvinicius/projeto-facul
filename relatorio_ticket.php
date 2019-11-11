@@ -12,7 +12,8 @@
   } else if($ticket == 'clientes'){
     $consulta = "SELECT count(codigo) AS quantidade,
     (total/count(codigo)) as media
-    FROM Cliente, (SELECT sum(valor) AS total FROM Venda WHERE empresa = '{$_SESSION["empresa"]}') AS venda;";
+    FROM Cliente, (SELECT sum(valor) AS total FROM Venda WHERE empresa = '{$_SESSION["empresa"]}') AS venda
+    WHERE empresa = '{$_SESSION["empresa"]}';";
   } else {
     header('Location: relatorios.php');
   }

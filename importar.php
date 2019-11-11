@@ -83,7 +83,7 @@
         Tip 2: you can also add an image using data-image tag
     -->
       <div class="logo">
-        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="#" class="simple-text logo-normal">
           Facilita
         </a>
       </div>
@@ -134,7 +134,7 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
-                          <a href="<?php echo ($_GET['csv'] == cliente) ? 'cliente.csv' : 'produto.csv' ;?>">
+                          <a href="<?php echo ($_GET['csv'] == 'cliente') ? 'cliente.csv' : 'produto.csv' ;?>">
                             <button type="button" class="btn btn-warning">Baixar modelo</button>
                           </a>
                         </div>

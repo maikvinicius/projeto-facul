@@ -2,6 +2,7 @@
 include 'conexaoGeral.php';
 
 $_SESSION["logado"] = false;
+$alerta = null;
 
 if(isset($_POST['email'])) {
 
