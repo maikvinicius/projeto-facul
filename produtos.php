@@ -85,9 +85,26 @@
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header card-header-primary">
+                <div class="card-header card-header-primary"  style="display:flex;justify-content: space-between;">
+                <div>
                   <h4 class="card-title ">Produtos</h4>
                   <p class="card-category"> Todos os produtos para venda</p>
+                </div>
+                <style>
+                  .box-imprimir{
+                    display:flex;flex-direction:column;align-items:center;margin-right: 10px;;color:white;
+                  }
+                  .box-imprimir:hover{
+                    cursor: pointer;
+                    opacity: 0.5;
+                  }
+                  </style>
+                  <a href="importar.php?csv=produto">
+                    <div class="box-imprimir">
+                      <i class="material-icons">compare_arrows</i>
+                      Importar
+                    </div>
+                  </a>
                 </div>
                 <div class="card-body">
                   <div class="table-responsive">

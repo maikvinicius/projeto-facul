@@ -12950,7 +12950,7 @@ textarea {
   line-height: 1.428571 !important;
 }
 
-.form-group input[type=file] {
+/* .form-group input[type=file] {
   opacity: 0;
   position: absolute;
   top: 0;
@@ -12960,7 +12960,7 @@ textarea {
   width: 100%;
   height: 100%;
   z-index: -1;
-}
+} */
 
 .form-newsletter .input-group,
 .form-newsletter .form-group {

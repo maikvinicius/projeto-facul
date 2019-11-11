@@ -6,8 +6,8 @@
     </p>
   </a>
   <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-    <a class="dropdown-item" href="#">Minha conta</a>
-    <div class="dropdown-divider"></div>
+    <!-- <a class="dropdown-item" href="#">Minha conta</a>
+    <div class="dropdown-divider"></div> -->
     <a class="dropdown-item" href="sair.php">Sair</a>
   </div>
 </li>

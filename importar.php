@@ -1,10 +1,56 @@
 <?php
 	include 'conexao.php';
 
-	$consulta = "SELECT * FROM Cliente WHERE empresa = '{$_SESSION["empresa"]}';";
-  $result = mysqli_query($conn, $consulta);
+  if(isset($_FILES['csv'])){
 
-  havePermission($conn, 'cliente', 'cliente_visualizar');
+    $file = fopen($_FILES['csv']['tmp_name'], "r");
+    $result = array();
+    $i = 0;
+    while (!feof($file)):
+        if (substr(($result[$i] = fgets($file)), 0, 10) !== ';;;;;;;;') :
+          $i++;
+        endif;
+    endwhile;
+    fclose($file);
+
+    $linhas = array();
+
+    foreach($result as $index => $linha){
+      if($index != 0){
+        $linha = explode(';', $linha);
+        $linha = explode(',', $linha[0]);
+        array_push($linhas, $linha);
+      }
+    }
+
+    foreach($linhas as $linha){
+
+      if($_GET['csv'] == 'cliente'){
+        $sql = "INSERT INTO Cliente (nome, cnpj, status, FK_Usuario_codigo, empresa)
+            VALUES ('{$linha[0]}', '{$linha[1]}', '{$linha[2]}', '{$_SESSION["codigo"]}', '{$_SESSION["empresa"]}')";
+        $sucesso = mysqli_query($conn, $sql);
+      }
+
+      if($_GET['csv'] == 'produto'){
+        $sql = "INSERT INTO Produto (nome, preco, status, FK_Usuario_codigo, empresa)
+            VALUES ('{$linha[0]}', '{$linha[1]}', '{$linha[2]}', '{$_SESSION["codigo"]}', '{$_SESSION["empresa"]}')";
+        $sucesso = mysqli_query($conn, $sql);
+      }
+
+    }
+
+    if($_GET['csv'] == 'cliente'){
+      header('Location: clientes.php');
+    }
+
+    if($_GET['csv'] == 'produto'){
+      header('Location: produtos.php');
+    }
+
+  }
+  
+  havePermission($conn, 'cliente', 'cliente_cadastrar');
+  havePermission($conn, 'produto', 'produto_cadastrar');
 
 ?>
 <!DOCTYPE html>
@@ -16,7 +62,7 @@
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    FACILITA
+    Facilita - CRM
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -31,9 +77,14 @@
 <body class="">
   <div class="wrapper ">
     <div class="sidebar" data-color="purple" data-background-color="white" data-image="assets/img/sidebar-1.jpg">
+      <!--
+        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+        Tip 2: you can also add an image using data-image tag
+    -->
       <div class="logo">
-        <a href="#" class="simple-text logo-normal">
-          FACILITA
+        <a href="http://www.creative-tim.com" class="simple-text logo-normal">
+          Facilita
         </a>
       </div>
       <div class="sidebar-wrapper">
@@ -45,7 +96,7 @@
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
         <div class="container-fluid">
           <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">Clientes</a>
+            <a class="navbar-brand" href="#pablo">Endereços</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="sr-only">Toggle navigation</span>
@@ -54,24 +105,7 @@
             <span class="navbar-toggler-icon icon-bar"></span>
           </button>
           <div class="collapse navbar-collapse justify-content-end">
-            <!-- <form class="navbar-form">
-              <div class="input-group no-border">
-                <input type="text" value="" class="form-control" placeholder="Pesquisar...">
-                <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                  <i class="material-icons">search</i>
-                  <div class="ripple-container"></div>
-                </button>
-              </div>
-            </form> -->
             <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="cliente.php">
-                  <i class="material-icons">add</i>
-                  <p class="d-lg-none d-md-block">
-                    Novo
-                  </p>
-                </a>
-              </li>
               <?php include 'notificacoes.php'; ?>
               <?php include 'mini_painel.php'; ?>
             </ul>
@@ -84,94 +118,50 @@
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-header card-header-primary" style="display:flex;justify-content: space-between;">
-                <div>
-                <h4 class="card-title ">Clientes</h4>
-                  <p class="card-category"> Toda sua carteira de clientes</p>
-                </div>
-                <style>
-                  .box-imprimir{
-                    display:flex;flex-direction:column;align-items:center;margin-right: 10px;color:white;
-                  }
-                  .box-imprimir:hover{
-                    cursor: pointer;
-                    opacity: 0.5;
-                  }
-                  </style>
-                  <a href="importar.php?csv=cliente">
-                    <div class="box-imprimir">
-                      <i class="material-icons">compare_arrows</i>
-                      Importar
-                    </div>
-                  </a>
-                  
+                <div class="card-header card-header-primary">
+                <h4 class="card-title ">Importar</h4>
+                  <p class="card-category">Importar CSV</p>
                 </div>
                 <div class="card-body">
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead class=" text-primary">
-                        <th>Nome</th>
-                        <th>CNPJ</th>
-                        <th>Responsável</th>
-                        <th>Status</th>
-                        <th>Ação</th>
-                      </thead>
-                      <tbody>
-                      <?php
-                      if (mysqli_num_rows($result) > 0) {
-                          while($row = mysqli_fetch_assoc($result)) {
-                      ?>
-                        <tr>
-                          <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo $row['cnpj']; ?></td>
-                          <td><?php echo $row['nome']; ?></td>
-                          <td><?php echo ($row['status'])? "Ativo" : "Desativado"; ?></td>
-                          <td class="text-primary" style="display:grid;grid-template-columns:1fr 1fr;">
-                            <a href="cliente.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Editar</button>
-                            </a>
-                            <a href="categorias_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Categorias</button>
-                            </a>
-                            <a href="enderecos_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Endereços</button>
-                            </a>
-                            <a href="contatos_clientes_view.php?id=<?php echo $row['codigo']; ?>">
-                              <button class="btn btn-primary" style="width:90%">Contatos</button>
-                            </a>
-                          </td>
-                        </tr>
-                        <?php } }else { ?>
-                        <tr>
-                          <td colspan="4">Nenhum cliente cadastrado!</td>
-                        </tr>
-                      <?php } ?>
-                      </tbody>
-                    </table>
-                  </div>
+                  <form action="#" method="post" enctype="multipart/form-data">
+
+                  <div class="row">
+                      <div class="col-md-12">
+                      <h3>Valores monetários é formatado no padrão AMERICANO: 1199.50</h3>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <a href="<?php echo ($_GET['csv'] == cliente) ? 'cliente.csv' : 'produto.csv' ;?>">
+                            <button type="button" class="btn btn-warning">Baixar modelo</button>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <input type="file" name="csv" required>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary pull-right">Cadastrar</button>
+                    
+                    <div class="clearfix"></div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
-          
-            <!-- <nav aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1">Voltar</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#">Próximo</a>
-                </li>
-              </ul>
-            </nav> -->
-          
         </div>
       </div>
     </div>
   </div>
+
   <!--   Core JS Files   -->
   <script src="assets/js/core/jquery.min.js"></script>
   <script src="assets/js/core/popper.min.js"></script>

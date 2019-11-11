@@ -85,7 +85,7 @@ if(isset($_POST['login']) && isset($_POST['senha'])) {
   </form>
 
   <div class="form-group" style="text-align:center;">
-      <a href="index.php">
+      <a href="esqueci.php">
         <label style="font-size:20px;">Esqueci minha senha</label>
       </a>
     </div>
